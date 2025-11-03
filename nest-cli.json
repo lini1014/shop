@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/shop/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/shop/tsconfig.app.json"
+  },
+  "projects": {
+    "inventory": {
+      "type": "application",
+      "root": "apps/inventory",
+      "entryFile": "main",
+      "sourceRoot": "apps/inventory/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/inventory/tsconfig.app.json"
+      }
+    },
+    "oms": {
+      "type": "application",
+      "root": "apps/oms",
+      "entryFile": "main",
+      "sourceRoot": "apps/oms/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/oms/tsconfig.app.json"
+      }
+    },
+    "payment": {
+      "type": "application",
+      "root": "apps/payment",
+      "entryFile": "main",
+      "sourceRoot": "apps/payment/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/payment/tsconfig.app.json"
+      }
+    },
+    "shared": {
+      "type": "library",
+      "root": "libs/shared",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared/tsconfig.lib.json"
+      }
+    },
+    "shop": {
+      "type": "application",
+      "root": "apps/shop",
+      "entryFile": "main",
+      "sourceRoot": "apps/shop/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/shop/tsconfig.app.json"
+      }
+    },
+    "wms": {
+      "type": "application",
+      "root": "apps/wms",
+      "entryFile": "main",
+      "sourceRoot": "apps/wms/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/wms/tsconfig.app.json"
+      }
+    }
+  },
+  "monorepo": true,
+  "root": "apps/shop"
+}
