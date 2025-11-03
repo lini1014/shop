@@ -14,8 +14,11 @@ export class AppService {
   private calcAmount(order: any): number {
     if (typeof order?.totalAmount === 'number') return order.totalAmount;
     const items = Array.isArray(order?.items) ? order.items : [];
-    return items.reduce((sum: number, it: any) =>
-      sum + (Number(it?.price) || 0) * (Number(it?.quantity) || 0), 0);
+    return items.reduce(
+      (sum: number, it: any) =>
+        sum + (Number(it?.price) || 0) * (Number(it?.quantity) || 0),
+      0,
+    );
   }
 
   async handleOrder(order: any) {
@@ -25,7 +28,10 @@ export class AppService {
     for (const item of order.items ?? []) {
       const { data } = await axios.post<{ available: boolean }>(
         'http://localhost:4000/inventory/check',
-        { productId: String(item.productId), quantity: Number(item.quantity) || 0 },
+        {
+          productId: String(item.productId),
+          quantity: Number(item.quantity) || 0,
+        },
         { timeout: 3000 },
       );
       if (!data.available) {

@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 
-interface InventoryRequest { productId: string; quantity: number; }
-interface InventoryResponse { available: boolean; }
+interface InventoryRequest {
+  productId: string;
+  quantity: number;
+}
+interface InventoryResponse {
+  available: boolean;
+}
 
 @Injectable()
 export class InventoryService {
