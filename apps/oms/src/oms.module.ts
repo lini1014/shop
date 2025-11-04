@@ -3,7 +3,7 @@ import { AppController } from './oms.controller';
 import { AppService } from './oms.service';
 
 @Module({
-  imports: [],         // ❌ kein ClientsModule, kein gRPC
+  imports: [],
   controllers: [AppController],
   providers: [AppService],
 })
