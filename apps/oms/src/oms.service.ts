@@ -24,7 +24,6 @@ export class AppService {
   async handleOrder(order: any) {
     this.logger.log(`Neue Bestellung: ${order?.orderId}`);
 
-    // 1) Inventory-Check per REST
     for (const item of order.items ?? []) {
       const { data } = await axios.post<{ available: boolean }>(
         'http://localhost:4000/inventory/check',
@@ -40,7 +39,6 @@ export class AppService {
       }
     }
 
-    // 2) Payment aufrufen
     try {
       const amount = this.calcAmount(order);
       const { data } = await axios.post<PaymentResponse>(

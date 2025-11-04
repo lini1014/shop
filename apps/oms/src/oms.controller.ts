@@ -1,5 +1,5 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { AppService } from './oms.service'; // <- Pfad korrigiert
+import { AppService } from './oms.service'; 
 
 @Controller('orders')
 export class AppController {

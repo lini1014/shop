@@ -3,6 +3,6 @@ import { PaymentModule } from './payment.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(PaymentModule);
-  await app.listen(3001); // fester Port
+  await app.listen(3001);
 }
 bootstrap();

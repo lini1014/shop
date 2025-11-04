@@ -6,7 +6,6 @@ type CheckBody = { productId: string; quantity: number };
 export class InventoryController {
   @Post('check')
   check(@Body() body: CheckBody) {
-    // Dummy-Logik: bis 5 Stück verfügbar
     const available = Number(body.quantity) <= 5;
     return { available };
   }

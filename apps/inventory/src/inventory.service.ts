@@ -11,7 +11,6 @@ interface InventoryResponse {
 
 @Injectable()
 export class InventoryService {
-  // 1 Argument -> Funktionsname muss exakt wie im proto heißen: CheckAvailability
   @GrpcMethod('InventoryService')
   CheckAvailability(data: InventoryRequest): InventoryResponse {
     const available = data.quantity <= 5;

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
-import { OmsModule } from './oms.module'; // oder AppModule, aber konsistent
+import { OmsModule } from './oms.module'; 
 
 async function bootstrap() {
   const app = await NestFactory.create(OmsModule);
