@@ -1,0 +1,1 @@
+Docker Ordner um RabbitMQ im container starten zu können.

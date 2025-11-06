@@ -1,0 +1,7 @@
+ Die .proto Datei ist kein TypeScript, sondern ein gRPC Schema
+(Protocol Buffers – eine Beschreibung, wie Nachrichten und Services aussehen).
+
+gRPC ist ein Remote Procedure Call System, das mit stark typisierten Nachrichten arbeitet.
+Die .proto Datei sagt also:
+
+"So sieht mein Service aus – welche Methoden gibt es, und welche Daten werden gesendet oder empfangen?"
