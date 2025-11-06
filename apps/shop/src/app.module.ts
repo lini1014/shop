@@ -1,10 +1,13 @@
+// src/app.module.ts (oder das zentrale Modul deiner Wahl)
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AlibiDbService } from './common/alibi-db.service';
+// + deine anderen Module (OMS, Inventory, Payment, WMS)
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    // OMSModule, InventoryModule, PaymentModule, WmsModule, ...
+  ],
+  providers: [AlibiDbService],
+  exports: [AlibiDbService],
 })
 export class AppModule {}
