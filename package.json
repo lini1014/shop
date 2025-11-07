@@ -8,11 +8,12 @@
   "scripts": {
     "start:dev:inventory": "nest start --watch inventory",
     "start:dev:payment": "nest start --watch payment",
-    "start:dev:oms": "nest start --watch oms",
+    "start:dev:oms": "nodemon --watch apps/oms -e ts --exec \"ts-node -r tsconfig-paths/register apps/oms/OmsMain.ts\"",
     "start:dev:all": "run-p start:dev:inventory start:dev:payment start:dev:oms",
     "build": "nest build",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
+    "start:oms": "ts-node -r tsconfig-paths/register apps/oms/OmsMain.ts",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/shop/main",
@@ -30,9 +31,13 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/microservices": "^11.1.8",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "^11.2.1",
     "axios": "^1.13.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -50,6 +55,7 @@
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^16.0.0",
     "jest": "^30.0.0",
+    "nodemon": "^3.1.10",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.6.2",
     "source-map-support": "^0.5.21",
