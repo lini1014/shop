@@ -11,18 +11,31 @@ export class PaymentController {
   @Post()
   @HttpCode(201)
   @ApiOperation({ summary: 'Zahlung ausführen' })
-  @ApiHeader({ name: 'Idempotency-Key', required: false, description: 'Für idempotente Retries' })
-  @ApiHeader({ name: 'X-Force-Outcome', required: false, description: 'Testing: success|decline|timeout|error' })
+  @ApiHeader({
+    name: 'Transaction-Id',
+    required: false,
+    description: 'Eindeutige Kennung pro Auftrag (verhindert doppelte Zahlungen bei Retries)',
+  })
+  @ApiHeader({
+    name: 'Simulate-Result',
+    required: false,
+    description: 'Nur für Tests: Erzwingt ein bestimmtes Ergebnis (success | decline | timeout | error)',
+  })
   @ApiResponse({ status: 201, description: 'Zahlung erfolgreich', type: PaymentView })
   @ApiResponse({ status: 402, description: 'Zahlung abgelehnt', type: PaymentView })
-  @ApiResponse({ status: 504, description: 'Timeout/Pending, bitte retryen', type: PaymentView })
-  async create(@Body() dto: CreatePaymentDto,
-               @Headers('Idempotency-Key') idemKey?: string,
-               @Headers('X-Force-Outcome') force?: string): Promise<PaymentView> {
-    const res = await this.svc.create(dto, idemKey, force);
+  @ApiResponse({ status: 504, description: 'Timeout/Pending, bitte erneut senden', type: PaymentView })
+  async create(
+    @Body() dto: CreatePaymentDto,
+    @Headers('Transaction-Id') transactionId?: string,
+    @Headers('Simulate-Result') simulateResult?: string
+  ): Promise<PaymentView> {
+    const res = await this.svc.create(dto, transactionId, simulateResult);
+
     if (res.status === 'DECLINED') throw new HttpException(res, 402);
     if (res.status === 'ERROR') throw new HttpException(res, 502);
-    if (res.status === 'PENDING') throw new HttpException({ ...res, hint: 'Retry with same Idempotency-Key' }, 504);
+    if (res.status === 'PENDING')
+      throw new HttpException({ ...res, hint: 'Retry with same Transaction-Id' }, 504);
+
     return res;
   }
 
@@ -38,5 +51,7 @@ export class PaymentController {
 
   @Get('health')
   @ApiOperation({ summary: 'Healthcheck' })
-  health() { return { status: 'ok' }; }
+  health() {
+    return { status: 'ok' };
+  }
 }

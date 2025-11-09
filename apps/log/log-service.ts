@@ -6,58 +6,40 @@ import { Injectable } from '@nestjs/common';
 import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Channel, Message } from 'amqplib';
+import type { Channel, Message } from 'amqplib';
+
+type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 interface LogPayload {
-  service: string; // Name des Dienstes, der die Log-Nachricht sendet
-  level: 'info' | 'warn' | 'error';
+  service: string;
+  level: LogLevel;
   message: string;
   timestamp: string;
+  context?: Record<string, any>;
+}
+
+const CENTRAL_LOG = path.resolve(process.cwd(), 'log', 'central.log');
+
+function append(line: string) {
+  fs.mkdirSync(path.dirname(CENTRAL_LOG), { recursive: true });
+  fs.appendFileSync(CENTRAL_LOG, line + '\n', 'utf-8');
 }
 
 @Injectable()
 export class LogService {
-  private logFilePath: string;
+  @MessagePattern('log') // <- Pattern für Client.emit('log', payload)
+  handleLog(@Payload() payload: LogPayload, @Ctx() ctx: RmqContext) {
+    const channel: Channel = ctx.getChannelRef();
+    const originalMsg: Message = ctx.getMessage();
 
-  constructor() {
-
-  const logDir = path.join(process.cwd(), 'log');
-  this.logFilePath = path.join(logDir, 'log-file');
-
-  console.log(`Log-Datei Pfad: ${this.logFilePath}`);
-
-  if(!fs.existsSync(logDir)){
-   console.log(`Erstelle Log-Verzeichnis: ${logDir}`);
-   fs.mkdirSync(logDir);
+    try {
+      const { service, level, message, timestamp, context } = payload ?? {};
+      const ctxStr = context ? ` ${JSON.stringify(context)}` : '';
+      append(`${timestamp ?? new Date().toISOString()} [${service ?? 'unknown'}] ${String(level ?? 'info').toUpperCase()} ${message ?? ''}${ctxStr}`);
+      channel.ack(originalMsg);
+    } catch (err) {
+      console.error('Konnte nicht in Logfile schreiben', err);
+      channel.nack(originalMsg, false, true); // requeue
+    }
   }
-  try {
-    fs.appendFileSync(this.logFilePath, '--- Log-Service gestartet ---\n');
-  }
-  catch(error) {
-    console.error('Konnte Log-Datei nicht initial schreiben', error);
-  }
- }
-@MessagePattern('log_message')
-async handleLog(@Payload() data: LogPayload, @Ctx() context: RmqContext) {
-  const channel : Channel = context.getChannelRef();
-  const originalMsg : Message = context.getMessage();
-
-  const logEntry = `${data.timestamp} [${data.service}] [${data.level.toUpperCase()}]: ${data.message}\n`;
-
-  try {
-
-    await fs.promises.appendFile(this.logFilePath, logEntry);
-
-    channel.ack(originalMsg);
-
-  }
-catch(error){
-  console.error('Konnte nicht in Logfile schreiben', error);
-  channel.nack(originalMsg, false, true);
-}
-
-
-}
-
-
 }

@@ -29,8 +29,8 @@
     "payment": {
       "type": "application",
       "root": "apps/payment",
-      "entryFile": "main",
-      "sourceRoot": "apps/payment/src",
+      "entryFile": "Paymentmain",
+      "sourceRoot": "apps/payment",
       "compilerOptions": {
         "tsConfigPath": "apps/payment/tsconfig.app.json"
       }
@@ -61,7 +61,16 @@
       "compilerOptions": {
         "tsConfigPath": "apps/wms/tsconfig.app.json"
       }
-    }
+    },
+    "log": {
+      "type": "application",
+      "root": "apps/log",
+      "entryFile": "logmain",
+      "sourceRoot": "apps/log",
+      "compilerOptions": {
+      "tsConfigPath": "apps/log/tsconfig.app.json"
+  }
+}  
   },
   "monorepo": true,
   "root": "apps/shop"

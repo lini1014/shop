@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/apps/log",
+    "rootDir": ".",
+    "declaration": false,
+    "types": ["node"]
+  },
+  "include": ["**/*"]
+}

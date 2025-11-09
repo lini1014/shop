@@ -11,17 +11,29 @@ services:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
 
+   logservice:
+    build: ./apps/log     # Ordner mit logmain.ts / log-module.ts / log-service.ts
+    command: node dist/apps/log/logmain.js
+    environment:
+      - AMQP_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on: [ rabbitmq ]
+    volumes:
+      - ./log:/usr/src/app/log  # schreibt central.log hierher
+
    #Payment   
    payment:
     build: .
     command: node dist/apps/payment/Paymentmain.js
     environment:
+      - SERVICE_NAME=payment
       - PORT=3003
       - AMQP_URL=amqp://guest:guest@rabbitmq:5672
     depends_on:
       - rabbitmq
     ports:
       - "3003:3003"
+    volumes:
+      - ./log:/usr/src/app/log
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3003/payments/health',res=>{process.exit(res.statusCode===200?0:1)})"]
       interval: 10s
