@@ -1,64 +1,71 @@
-/// kernlogik
+/// OMS Orchestrierung: keine Preis-/Bestandslogik – nur Weiterleitung
 import { Injectable } from '@nestjs/common';
-
-export interface ItemDto { productId: string; quantity: number }
-export interface CreateOrderDto { orderId: string; totalAmount: number; items: ItemDto[] }
-export interface Order {
-  id: string;
-  totalAmount: number;
-  items: ItemDto[];
-  status: 'RECEIVED' | 'RESERVED' | 'PAID' | 'FULFILLMENT_REQUESTED' | 'CANCELLED';
-  reason?: string;
-}
+import axios from 'axios';
+import { CreateOrderDto } from '../dto/CreateOrderDTO';
+import { ItemDto } from '../dto/ItemDTO';
+import { OrderDto, OrderStatus } from '../dto/OrderDTO';
 
 @Injectable()
 export class OmsService {
-  private orders = new Map<string, Order>();
+  private orders = new Map<number, OrderDto>();
 
-  async createOrder(body: CreateOrderDto): Promise<Order> {
-    const order: Order = {
+  private readonly inventoryBaseUrl = process.env.INVENTORY_URL || 'http://localhost:3001';
+  private readonly paymentBaseUrl = process.env.PAYMENT_URL || 'http://localhost:3002';
+
+  async createOrderFromSelection(body: CreateOrderDto): Promise<OrderDto> {
+    const order: OrderDto = {
       id: body.orderId,
-      totalAmount: body.totalAmount,
       items: body.items,
-      status: 'RECEIVED',
+      status: OrderStatus.RECEIVED,
     };
     this.orders.set(order.id, order);
 
-    // --- Orchestrierung (minimal, später echte Calls einhängen) ---
-    try {
-      // Inventory
-      order.status = 'RESERVED';
-      // Payment
-      order.status = 'PAID';
-      // WMS anstoßen
-      order.status = 'FULFILLMENT_REQUESTED';
-    } catch (e: unknown) {
-      order.status = 'CANCELLED';
-      order.reason = e instanceof Error ? e.message : 'UNKNOWN';
+    // 1) Inventory reservieren
+    const reserved = await this.inventoryReserve(body.items);
+    if (!reserved.ok) {
+      order.status = OrderStatus.CANCELLED;
+      order.reason = 'OUT_OF_STOCK';
+      this.orders.set(order.id, order);
+      return order;
     }
+    order.status = OrderStatus.RESERVED;
+    this.orders.set(order.id, order);
+
+    // 2) Payment ausführen
+    const paid = await this.paymentCharge(order.id, body.items, body.accountBalance);
+    if (!paid.ok) {
+      order.status = OrderStatus.CANCELLED;
+      order.reason = 'PAYMENT_FAILED';
+      this.orders.set(order.id, order);
+      return order;
+    }
+    order.status = OrderStatus.PAID;
+
+    // 3) WMS anstoßen (nur Status markieren)
+    order.status = OrderStatus.FULFILLMENT_REQUESTED;
     this.orders.set(order.id, order);
     return order;
   }
 
-  async getOrderById(id: string): Promise<Order | null> {
+  async getOrderById(id: number): Promise<OrderDto | null> {
     return this.orders.get(id) ?? null;
   }
 
-  // Demo-Szenarien optional
-  async processScenario(mode: 'happy' | 'oos' | 'payfail'): Promise<{ status: string; orderId: string; reason?: string }> {
-    const order = await this.createOrder({
-      orderId: `ORD-${mode.toUpperCase()}`,
-      totalAmount: 123.45,
-      items: [{ productId: 'SKU-1', quantity: 1 }],
-    });
-    if (mode === 'oos') {
-      order.status = 'CANCELLED';
-      order.reason = 'OUT_OF_STOCK';
-    } else if (mode === 'payfail') {
-      order.status = 'CANCELLED';
-      order.reason = 'PAYMENT_FAILED';
+  private async inventoryReserve(items: ItemDto[]): Promise<{ ok: boolean }> {
+    try {
+      const res = await axios.post(`${this.inventoryBaseUrl}/inventory/reservations`, { items });
+      return { ok: !!res.data?.ok };
+    } catch {
+      return { ok: false };
     }
-    this.orders.set(order.id, order);
-    return { status: order.status, orderId: order.id, reason: order.reason };
+  }
+
+  private async paymentCharge(orderId: number, items: ItemDto[], accountBalance: number): Promise<{ ok: boolean }> {
+    try {
+      const res = await axios.post(`${this.paymentBaseUrl}/payment/charges`, { orderId, items, accountBalance });
+      return { ok: !!res.data?.ok };
+    } catch {
+      return { ok: false };
+    }
   }
 }
