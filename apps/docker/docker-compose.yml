@@ -10,3 +10,20 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
+
+   #Payment   
+   payment:
+    build: .
+    command: node dist/apps/payment/Paymentmain.js
+    environment:
+      - PORT=3003
+      - AMQP_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    ports:
+      - "3003:3003"
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3003/payments/health',res=>{process.exit(res.statusCode===200?0:1)})"]
+      interval: 10s
+      timeout: 3s
+      retries: 5

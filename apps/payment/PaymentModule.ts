@@ -1,1 +1,9 @@
-/// Definiert, welche Controller & Services geladen werden.
+import { Module } from '@nestjs/common';
+import { PaymentController } from './PaymentController';
+import { PaymentService } from './PaymentService';
+
+@Module({
+  controllers: [PaymentController],
+  providers: [PaymentService],
+})
+export class PaymentModule {}
