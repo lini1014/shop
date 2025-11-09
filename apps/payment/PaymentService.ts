@@ -141,8 +141,10 @@ export class PaymentService {
     db.set(paymentId, view);
     if (transactionId) transactionCache.set(transactionId, { key: transactionId, response: view });
 
-    // OPTIONAL: Domain-Event fürs Business
-    // await emitPaymentEvent(view);
+    // Nur bei Erfolg:
+    if (view.status === 'SUCCEEDED') {
+    await emitPaymentEvent(view); // -> routingKey: payment.succeeded
+    }
 
     return view;
   }

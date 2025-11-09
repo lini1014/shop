@@ -12,7 +12,7 @@ async function bootstrap() {
   // Swagger Setup
   const config = new DocumentBuilder()
     .setTitle('Shop Payment Service')
-    .setDescription('API für Zahlungen inkl. Idempotenz & Test-Headern')
+    .setDescription('API für Zahlungen inkl. ID & Test-Headern')
     .setVersion('1.0.0')
     .addServer('http://localhost:3003', 'Local')
     .build();
