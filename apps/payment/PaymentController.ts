@@ -1,7 +1,7 @@
 import { Controller, Post, Get, Param, Body, Headers, HttpException, HttpCode } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiHeader, ApiParam } from '@nestjs/swagger';
 import { PaymentService } from './PaymentService';
-import { CreatePaymentDto, PaymentView } from './PaymentDto';
+import { CreatePaymentDto, PaymentView } from '../dto/PaymentDTO';
 
 @ApiTags('payments')
 @Controller('payments')
@@ -33,15 +33,14 @@ export class PaymentController {
 
     if (res.status === 'DECLINED') throw new HttpException(res, 402);
     if (res.status === 'ERROR') throw new HttpException(res, 502);
-    if (res.status === 'PENDING')
-      throw new HttpException({ ...res, hint: 'Retry with same Transaction-Id' }, 504);
+    if (res.status === 'PENDING') throw new HttpException({ ...res, hint: 'Retry with same Transaction-Id' }, 504);
 
     return res;
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Payment-Status abrufen' })
-  @ApiParam({ name: 'id', example: 'pay_1234-...' })
+  @ApiParam({ name: 'id', example: 'pay_1234-5678' })
   @ApiResponse({ status: 200, type: PaymentView })
   async get(@Param('id') id: string): Promise<PaymentView> {
     const res = await this.svc.get(id);
@@ -51,7 +50,5 @@ export class PaymentController {
 
   @Get('health')
   @ApiOperation({ summary: 'Healthcheck' })
-  health() {
-    return { status: 'ok' };
-  }
+  health() { return { status: 'ok' }; }
 }
