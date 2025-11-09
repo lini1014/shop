@@ -1,47 +1,63 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Channel, Message } from 'amqplib';
 
-interface LogPayload { 
-    service: string; // Name des Dienstes, der die Log-Nachricht sendet
-    level: 'info' | 'warn' | 'error';
-    message: string;
-    timestamp: string;
+interface LogPayload {
+  service: string; // Name des Dienstes, der die Log-Nachricht sendet
+  level: 'info' | 'warn' | 'error';
+  message: string;
+  timestamp: string;
 }
 
 @Injectable()
 export class LogService {
-      private LogFilePath: string;
+  private logFilePath: string;
 
-      constructor(){
-        /** Bauen des Pfades zur Log-Datei
-         * __dirname geht zum "dist" Ordner, also geht man hier 3 Ebenen zurück zum "apps" Ordner
-         */
-        this.LogFilePath = path.join(__dirname, '..','..','..', 'log', 'log-file');
-        console.log(`Log-Datei Pfad: ${this.LogFilePath}`);
+  constructor() {
 
-        //* Initialisieren der Log-Datei, falls sie nicht existiert
-        fs.promises.writeFile(this.LogFilePath, '', { flag: 'a'});
-      }
-    
-      @MessagePattern('log_message') //* Alle Services senden Log-Nachrichten an dieses Pattern
-      async handleLog(@Payload() data: LogPayload, @Ctx() context: RmqContext){
-        const channel = context.getChannelRef();
-        const originalMsg = context. getMessage();
+  const logDir = path.join(process.cwd(), 'log');
+  this.logFilePath = path.join(logDir, 'log-file');
 
-        const logEntry = '${data.timestamp} [${data.service}] [${data.level.toUpperCase()}]: ${data.message}\n';
+  console.log(`Log-Datei Pfad: ${this.logFilePath}`);
 
-        try {
-            //* Anhängen der Log-Nachricht an die Log-Datei
-            await fs.promises.appendFile(this.LogFilePath, logEntry);
+  if(!fs.existsSync(logDir)){
+   console.log(`Erstelle Log-Verzeichnis: ${logDir}`);
+   fs.mkdirSync(logDir);
+  }
+  try {
+    fs.appendFileSync(this.logFilePath, '--- Log-Service gestartet ---\n');
+  }
+  catch(error) {
+    console.error('Konnte Log-Datei nicht initial schreiben', error);
+  }
+ }
+@MessagePattern('log_message')
+async handleLog(@Payload() data: LogPayload, @Ctx() context: RmqContext) {
+  const channel : Channel = context.getChannelRef();
+  const originalMsg : Message = context.getMessage();
 
-            //* Bestätigen der Nachricht, damit sie aus der Warteschlange entfernt wird
-            channel
-        }
-        catch (error) {
-            //* Im Fehlerfall die Nachricht nicht bestätigen, damit sie erneut verarbeitet werden kann
-            channel.nack(originalMsg, false, true);
-        }
-      }
+  const logEntry = `${data.timestamp} [${data.service}] [${data.level.toUpperCase()}]: ${data.message}\n`;
+
+  try {
+
+    await fs.promises.appendFile(this.logFilePath, logEntry);
+
+    channel.ack(originalMsg);
+
+  }
+catch(error){
+  console.error('Konnte nicht in Logfile schreiben', error);
+  channel.nack(originalMsg, false, true);
+}
+
+
+}
+
+
 }

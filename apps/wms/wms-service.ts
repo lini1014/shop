@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable prettier/prettier */
 /// kernlogik
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
+import { Channel, Message } from 'amqplib';
 
 //* Aussehen einer Order-Nachricht (Beispiel)
 interface OrderPayload {
@@ -43,14 +45,14 @@ export class WmsService implements OnModuleInit {
    */
   @MessagePattern('order_received')
   async handleOrderReceived(@Payload() data: OrderPayload, @Ctx() context: RmqContext) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const channel = context.getChannelRef();
-    const originalMsg = context.getMessage();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, prettier/prettier
+    const channel : Channel = context.getChannelRef();
+    const originalMsg : Message = context.getMessage();
 
     this.log('info', `[WMS] Bestellung erhalten: ${data.orderId}`);
 
     try {
-      //* Simulation der Arbeit
+      //* Simulation
 
       //* Simulation von "Item Picked"
       await this.sleep(2000); // 2 Sekunden warten
@@ -76,10 +78,12 @@ export class WmsService implements OnModuleInit {
         'error',
         `[WMS] Fehler bei der Verarbeitung der Bestellung ${data.orderId}:${error.message}`,
       );
+
       //* Im Fehlerfall die Nachricht nicht bestätigen, damit sie erneut verarbeitet wird
       channel.nack(originalMsg, false, true);
     }
   }
+
   //* Sender-Methode
   private publishStatus(orderId: string, status: string) {
     const payload = { orderId, status, timestamp: new Date() };
@@ -92,6 +96,7 @@ export class WmsService implements OnModuleInit {
      */
     this.statusClient.emit('status_update', payload);
   }
+
   //** Eine simple Helfer-Funktion um zu warten */
   private sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));

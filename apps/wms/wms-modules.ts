@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 // In NestJS ist ein Modul (immer mit @Module() markiert) so etwas wie ein „Container“,
 //der alle Teile dieses einen Services bündelt.
 
@@ -33,7 +34,10 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           queueOptions: {
             durable: false,
           },
-          name: 'LOG_CLIENT',
+        },
+      },
+          { 
+            name: 'LOG_CLIENT', //* Implementieren des LogClients
           transport: Transport.RMQ,
           options: {
             urls: ['amqp://guest:guest@localhost:5672'],
@@ -43,7 +47,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
             },
           },
         },
-      },
     ]),
   ],
   providers: [WmsService] /** Service, der die Logik enthält */,
