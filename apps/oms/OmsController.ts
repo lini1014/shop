@@ -8,7 +8,7 @@ export class OmsController {
   private readonly logger = new Logger(OmsController.name);
   constructor(private readonly omsService: OmsService) {}
 
-  // POST /orders — echte Erstellung (Postman-geeignet)
+  // POST /orders
   @Post()
   create(@Body() body: CreateOrderDto) {
     this.logger.log(
