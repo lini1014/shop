@@ -9,12 +9,10 @@ export class CreatePaymentDto {
   @Min(1)
   orderId!: number;
 
-  // Wichtig: wie in OrderDTO -> totalAmount
   @ApiProperty({ example: 209.97, description: 'Gesamtbetrag (entspricht OrderDTO.totalAmount)' })
   @IsNumber()
   totalAmount!: number;
 
-  // Optional: für Abwärtskompatibilität zu älteren Calls
   @ApiPropertyOptional({ example: 209.97, description: 'Alias für totalAmount (legacy/kompatibel)' })
   @IsOptional()
   @IsNumber()
