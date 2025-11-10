@@ -23,8 +23,11 @@ async function ensureAmqp(): Promise<Channel | null> {
     amqpConn = await amqplib.connect(AMQP_URL);
     amqpCh = await amqpConn.createChannel();
     await amqpCh.assertQueue(LOG_QUEUE, { durable: true });
-    amqpConn.on('close', () => { amqpCh = null; amqpConn = null; });
-    amqpConn.on('error', () => { });
+    amqpConn.on('close', () => {
+      amqpCh = null;
+      amqpConn = null;
+    });
+    amqpConn.on('error', () => {});
     return amqpCh;
   } catch {
     return null;
@@ -45,12 +48,13 @@ async function publishCentralLog(level: LogLevel, message: string, context?: Rec
   };
   try {
     const ch = await ensureAmqp();
-    if (ch) ch.sendToQueue(LOG_QUEUE, Buffer.from(JSON.stringify(payload)), {
-      contentType: 'application/json',
-      persistent: true,
-      headers: { pattern: 'log' },
-    });
-  } catch { }
+    if (ch)
+      ch.sendToQueue(LOG_QUEUE, Buffer.from(JSON.stringify(payload)), {
+        contentType: 'application/json',
+        persistent: true,
+        headers: { pattern: 'log' },
+      });
+  } catch {}
 }
 
 function writeFileLog(line: string) {
@@ -58,9 +62,18 @@ function writeFileLog(line: string) {
   fs.appendFileSync(LOG_PATH, `${new Date().toISOString()} ${line}\n`);
 }
 
-async function logInfo(line: string, ctx?: Record<string, any>)  { writeFileLog(line); await publishCentralLog('info',  line, ctx); }
-async function logWarn(line: string, ctx?: Record<string, any>)  { writeFileLog(line); await publishCentralLog('warn',  line, ctx); }
-async function logError(line: string, ctx?: Record<string, any>) { writeFileLog(line); await publishCentralLog('error', line, ctx); }
+async function logInfo(line: string, ctx?: Record<string, any>) {
+  writeFileLog(line);
+  await publishCentralLog('info', line, ctx);
+}
+async function logWarn(line: string, ctx?: Record<string, any>) {
+  writeFileLog(line);
+  await publishCentralLog('warn', line, ctx);
+}
+async function logError(line: string, ctx?: Record<string, any>) {
+  writeFileLog(line);
+  await publishCentralLog('error', line, ctx);
+}
 
 type CacheItem = { key: string; response: PaymentView };
 const transactionCache = new Map<string, CacheItem>();
@@ -79,15 +92,25 @@ function decideOutcome(dto: CreatePaymentDto, simulateResult?: string): PaymentS
 }
 
 export class PaymentService {
-  async create(dto: CreatePaymentDto, transactionId?: string, simulateResult?: string): Promise<PaymentView> {
+  async create(
+    dto: CreatePaymentDto,
+    transactionId?: string,
+    simulateResult?: string,
+  ): Promise<PaymentView> {
     if (transactionId && transactionCache.has(transactionId)) {
       const cached = transactionCache.get(transactionId)!.response;
-      await logInfo(`[TX-HIT] order=${dto.orderId} paymentId=${cached.paymentId}`, { orderId: dto.orderId, paymentId: cached.paymentId });
+      await logInfo(`[TX-HIT] order=${dto.orderId} paymentId=${cached.paymentId}`, {
+        orderId: dto.orderId,
+        paymentId: cached.paymentId,
+      });
       return cached;
     }
 
     const paymentId = `pay_${randomUUID()}`;
-    await logInfo(`[CREATE-REQUEST] order=${dto.orderId} amount=${dto.amount}`, { orderId: dto.orderId, amount: dto.amount });
+    await logInfo(`[CREATE-REQUEST] order=${dto.orderId} amount=${dto.amount}`, {
+      orderId: dto.orderId,
+      amount: dto.amount,
+    });
 
     const status = decideOutcome(dto, simulateResult);
     const view: PaymentView = {
@@ -99,21 +122,33 @@ export class PaymentService {
 
     switch (status) {
       case 'SUCCEEDED':
-        await logInfo(`[APPROVED] order=${dto.orderId} paymentId=${paymentId}`, { orderId: dto.orderId, paymentId });
+        await logInfo(`[APPROVED] order=${dto.orderId} paymentId=${paymentId}`, {
+          orderId: dto.orderId,
+          paymentId,
+        });
         break;
 
       case 'DECLINED':
         view.errorMessage = 'Payment method was declined.';
-        await logWarn(`[DECLINED] order=${dto.orderId} paymentId=${paymentId}`, { orderId: dto.orderId, paymentId });
+        await logWarn(`[DECLINED] order=${dto.orderId} paymentId=${paymentId}`, {
+          orderId: dto.orderId,
+          paymentId,
+        });
         break;
 
       case 'PENDING':
-        await logWarn(`[TIMEOUT/PENDING] order=${dto.orderId} paymentId=${paymentId} -> simulate retry by caller`, { orderId: dto.orderId, paymentId });
+        await logWarn(
+          `[TIMEOUT/PENDING] order=${dto.orderId} paymentId=${paymentId} -> simulate retry by caller`,
+          { orderId: dto.orderId, paymentId },
+        );
         break;
 
       case 'ERROR':
         view.errorMessage = 'Unexpected provider error.';
-        await logError(`[ERROR] order=${dto.orderId} paymentId=${paymentId}`, { orderId: dto.orderId, paymentId });
+        await logError(`[ERROR] order=${dto.orderId} paymentId=${paymentId}`, {
+          orderId: dto.orderId,
+          paymentId,
+        });
         break;
     }
 
@@ -138,8 +173,10 @@ async function emitPaymentEvent(view: PaymentView) {
   const exchange = 'shop.events';
   await ch.assertExchange(exchange, 'topic', { durable: true });
   const routingKey = `payment.${view.status.toLowerCase()}`; // z.B. payment.succeeded
-  ch.publish(exchange, routingKey, Buffer.from(JSON.stringify(view)),
-    { contentType: 'application/json', persistent: true });
+  ch.publish(exchange, routingKey, Buffer.from(JSON.stringify(view)), {
+    contentType: 'application/json',
+    persistent: true,
+  });
   await ch.close();
   await conn.close();
 }

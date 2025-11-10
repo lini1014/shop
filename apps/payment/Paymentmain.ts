@@ -10,7 +10,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Payment API')
-    .setDescription('Zahlungen inkl. Idempotenz (Transaction-Id), Test-Header (Simulate-Result) & Events')
+    .setDescription(
+      'Zahlungen inkl. Idempotenz (Transaction-Id), Test-Header (Simulate-Result) & Events',
+    )
     .setVersion('1.0.0')
     .addServer('http://localhost:3003', 'Local')
     .build();

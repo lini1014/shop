@@ -14,4 +14,3 @@ export class OrderDto {
   status!: OrderStatus;
   reason?: string;
 }
-

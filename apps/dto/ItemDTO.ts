@@ -10,4 +10,3 @@ export class ItemDto {
   @Min(1)
   quantity!: number;
 }
-
