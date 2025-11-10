@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CreatePaymentDto, PaymentView, PaymentStatus } from '../dto/PaymentDTO';
+import { CreatePaymentDto, PaymentView, PaymentStatus } from '../../libs/dto/PaymentDTO';
 import amqplib, { Connection, Channel } from 'amqplib';
 
 const LOG_PATH = path.resolve(process.cwd(), 'log', 'central.log');

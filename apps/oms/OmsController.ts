@@ -1,7 +1,7 @@
 // apps/oms/OmsController.ts
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Logger } from '@nestjs/common';
 import { OmsService } from './OmsService';
-import { CreateOrderDto } from '../dto/CreateOrderDTO';
+import { CreateOrderDto } from '../../libs/dto/CreateOrderDTO';
 
 @Controller('orders')
 export class OmsController {

@@ -8,9 +8,9 @@
  */
 import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import axios from 'axios';
-import { CreateOrderDto } from '../dto/CreateOrderDTO';
-import { ItemDto } from '../dto/ItemDTO';
-import { OrderDto, OrderStatus } from '../dto/OrderDTO';
+import { CreateOrderDto } from '../../libs/dto/CreateOrderDTO';
+import { ItemDto } from '../../libs/dto/ItemDTO';
+import { OrderDto, OrderStatus } from '../../libs/dto/OrderDTO';
 
 // ---- Antwort-Interfaces der Upstream-Services (statisch typisiert) ----
 interface InventoryReserveRes {
