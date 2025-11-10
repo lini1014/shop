@@ -27,7 +27,6 @@ interface InventoryReleaseRes {
 interface PaymentChargeRes {
   ok: boolean;
   transactionId?: string;
-  totalAmount?: number;
   reason?: string;
 }
 
@@ -104,9 +103,16 @@ export class OmsService {
     return order;
   }
 
-  // Get methode um letzte bestellug zu sehen TODO
-  async getOrderById(id: number): Promise<OrderDto | null> {
-    return this.orders.get(id) ?? null;
+  // Get methode: Order nach ID holen, 404 wenn nicht vorhanden
+  async getOrderById(id: number): Promise<OrderDto> {
+    const order = this.orders.get(id);
+    if (!order) {
+      throw new HttpException(
+        { message: 'Order nicht gefunden', reason: 'NOT_FOUND' },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return order;
   }
 
   // ---------------- Inventory Calls ----------------
@@ -181,7 +187,6 @@ export class OmsService {
       return {
         ok: data.ok,
         transactionId: data.transactionId,
-        totalAmount: data.totalAmount,
         reason: data.reason,
       };
     } catch (e) {
