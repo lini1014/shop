@@ -18,19 +18,16 @@ docker compose up rabbitmq
 
 #Zum testen POST-Erfolgreich
 {
-  "orderId": "ORD-1001",
-  "amount": 100.00,
-  "currency": "EUR",
-  "method": "CARD"
+  "orderId": 1001,
+  "amount": 99.99
 }
+
 
 
 #Post-fehler
 {
-  "orderId": "ORD-1002",
-  "amount": 10.13,
-  "currency": "EUR",
-  "method": "CARD"
+  "orderId": 1002,
+  "amount": 99.13
 }
 
 #Logs prüfen
