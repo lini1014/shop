@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "start:dev:inventory": "nodemon --watch apps/inventory--exec \"ts-node -r tsconfig-paths/register apps/inventory/InventoryMain.ts\"",
+    "start:dev:inventory": "nodemon --watch apps/inventory/src --exec \"ts-node -r tsconfig-paths/register apps/inventory/src/InventoryMain.ts\"",
     "start:dev:payment": "nodemon --watch apps/payment -e ts --exec \"ts-node -r tsconfig-paths/register apps/payment/Paymentmain.ts\"",
     "start:dev:oms": "nodemon --watch apps/oms -e ts --exec \"ts-node -r tsconfig-paths/register apps/oms/OmsMain.ts\"",
     "start:dev:wms": "nodemon --watch apps/wms -e ts --exec \"ts-node -r tsconfig-paths/register apps/wms/wmsmain.ts\"",
