@@ -13,4 +13,4 @@ async function bootstrap() {
   console.log(`🚀 Inventory-Service läuft auf http://localhost:${port}`);
 }
 
-bootstrap();
+void bootstrap();

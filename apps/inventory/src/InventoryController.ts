@@ -12,9 +12,7 @@ export class InventoryController {
    * Reserviert Bestand für eine Bestellung (Step 1 in OMS)
    */
   @Post('reservations')
-  async reserveStock(
-    @Body() body: { orderId: number; items: { sku: string; qty: number }[] },
-  ) {
+  async reserveStock(@Body() body: { orderId: number; items: { sku: string; qty: number }[] }) {
     this.logger.log(`Reservierung für Order ${body.orderId}`);
     const reservationId = await this.service.reserveStock(body.items);
     if (!reservationId) {

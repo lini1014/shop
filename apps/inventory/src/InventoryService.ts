@@ -22,9 +22,7 @@ export class InventoryService {
   /**
    * Reserviert Bestand für eine Bestellung
    */
-  async reserveStock(items: { sku: string; qty: number }[]): Promise<string | null> {
-    this.logger.log(`ReserveStock: ${JSON.stringify(items)}`);
-
+  reserveStock(items: { sku: string; qty: number }[]): string | null {
     // Prüfen, ob genug Bestand vorhanden ist
     for (const item of items) {
       const current = this.stock.get(item.sku) ?? 0;
@@ -49,7 +47,7 @@ export class InventoryService {
   /**
    * Verbindlich abbuchen (Commit)
    */
-  async commitReservation(reservationId: string): Promise<boolean> {
+  commitReservation(reservationId: string): boolean {
     this.logger.log(`CommitReservation: ${reservationId}`);
     if (!this.reservations.has(reservationId)) {
       this.logger.warn(`Commit fehlgeschlagen – Reservierung nicht gefunden: ${reservationId}`);
@@ -65,7 +63,7 @@ export class InventoryService {
   /**
    * Reservierung wieder freigeben (Rollback)
    */
-  async releaseReservation(reservationId: string): Promise<boolean> {
+  releaseReservation(reservationId: string): boolean {
     this.logger.log(`ReleaseReservation: ${reservationId}`);
     const reservation = this.reservations.get(reservationId);
 
