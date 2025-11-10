@@ -33,8 +33,11 @@ async function ensureAmqp(): Promise<Channel | null> {
     conn = await amqplib.connect(AMQP_URL);
     ch = await conn.createChannel();
     await ch.assertExchange(EXCHANGE, 'topic', { durable: true });
-    conn.on('close', () => { ch = null; conn = null; });
-    conn.on('error', () => {  });
+    conn.on('close', () => {
+      ch = null;
+      conn = null;
+    });
+    conn.on('error', () => {});
     return ch;
   } catch {
     return null;
@@ -49,7 +52,7 @@ export async function log(level: LogLevel, message: string, context?: Record<str
     service: SERVICE,
     level,
     message,
-    context
+    context,
   };
 
   ensureFileDir();
@@ -61,16 +64,15 @@ export async function log(level: LogLevel, message: string, context?: Record<str
       const rk = `log.${SERVICE}.${level}`;
       channel.publish(EXCHANGE, rk, Buffer.from(JSON.stringify(evt)), {
         contentType: 'application/json',
-        persistent: true
+        persistent: true,
       });
     }
-  } catch {
-  }
+  } catch {}
 }
 
 export const logger = {
   debug: (msg: string, ctx?: any) => log('debug', msg, ctx),
-  info:  (msg: string, ctx?: any) => log('info',  msg, ctx),
-  warn:  (msg: string, ctx?: any) => log('warn',  msg, ctx),
+  info: (msg: string, ctx?: any) => log('info', msg, ctx),
+  warn: (msg: string, ctx?: any) => log('warn', msg, ctx),
   error: (msg: string, ctx?: any) => log('error', msg, ctx),
 };

@@ -46,8 +46,8 @@ export class WmsService implements OnModuleInit {
   @MessagePattern('order_received')
   async handleOrderReceived(@Payload() data: OrderPayload, @Ctx() context: RmqContext) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, prettier/prettier
-    const channel : Channel = context.getChannelRef();
-    const originalMsg : Message = context.getMessage();
+    const channel: Channel = context.getChannelRef();
+    const originalMsg: Message = context.getMessage();
 
     this.log('info', `[WMS] Bestellung erhalten: ${data.orderId}`);
 

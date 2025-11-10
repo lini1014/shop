@@ -36,17 +36,17 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           },
         },
       },
-          { 
-            name: 'LOG_CLIENT', //* Implementieren des LogClients
-          transport: Transport.RMQ,
-          options: {
-            urls: ['amqp://guest:guest@localhost:5672'],
-            queue: 'log_queue',
-            queueOptions: {
-              durable: true,
-            },
+      {
+        name: 'LOG_CLIENT', //* Implementieren des LogClients
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://guest:guest@localhost:5672'],
+          queue: 'log_queue',
+          queueOptions: {
+            durable: true,
           },
         },
+      },
     ]),
   ],
   providers: [WmsService] /** Service, der die Logik enthält */,

@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start:dev:inventory": "nest start --watch inventory",
-    "start:dev:payment": "nest start --watch payment",
+    "start:dev:payment": "nodemon --watch apps/payment -e ts --exec \"ts-node -r tsconfig-paths/register apps/payment/Paymentmain.ts\"",
     "start:dev:oms": "nodemon --watch apps/oms -e ts --exec \"ts-node -r tsconfig-paths/register apps/oms/OmsMain.ts\"",
     "start:dev:wms": "nodemon --watch apps/wms -e ts --exec \"ts-node -r tsconfig-paths/register apps/wms/wmsmain.ts\"",
     "start:dev:log": "nodemon --watch apps/log -e ts --exec \"ts-node -r tsconfig-paths/register apps/log/logmain.ts\"",

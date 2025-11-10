@@ -35,7 +35,9 @@ export class LogService {
     try {
       const { service, level, message, timestamp, context } = payload ?? {};
       const ctxStr = context ? ` ${JSON.stringify(context)}` : '';
-      append(`${timestamp ?? new Date().toISOString()} [${service ?? 'unknown'}] ${String(level ?? 'info').toUpperCase()} ${message ?? ''}${ctxStr}`);
+      append(
+        `${timestamp ?? new Date().toISOString()} [${service ?? 'unknown'}] ${String(level ?? 'info').toUpperCase()} ${message ?? ''}${ctxStr}`,
+      );
       channel.ack(originalMsg);
     } catch (err) {
       console.error('Konnte nicht in Logfile schreiben', err);

@@ -18,11 +18,7 @@ function getClient(): ClientProxy {
   return client;
 }
 
-export async function publishLog(
-  level: LogLevel,
-  message: string,
-  context?: Record<string, any>,
-) {
+export async function publishLog(level: LogLevel, message: string, context?: Record<string, any>) {
   const payload = {
     service: process.env.SERVICE_NAME || 'unknown',
     level,
@@ -37,7 +33,7 @@ export async function publishLog(
 // Convenience
 export const logClient = {
   debug: (m: string, c?: any) => publishLog('debug', m, c),
-  info:  (m: string, c?: any) => publishLog('info',  m, c),
-  warn:  (m: string, c?: any) => publishLog('warn',  m, c),
+  info: (m: string, c?: any) => publishLog('info', m, c),
+  warn: (m: string, c?: any) => publishLog('warn', m, c),
   error: (m: string, c?: any) => publishLog('error', m, c),
 };

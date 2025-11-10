@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Param, Body, Headers, HttpException, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Param,
+  Body,
+  Headers,
+  HttpException,
+  HttpCode,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiHeader, ApiParam } from '@nestjs/swagger';
 import { PaymentService } from './PaymentService';
 import { CreatePaymentDto, PaymentView } from '../../libs/dto/PaymentDTO';
@@ -19,21 +28,27 @@ export class PaymentController {
   @ApiHeader({
     name: 'Simulate-Result',
     required: false,
-    description: 'Nur für Tests: Erzwingt ein bestimmtes Ergebnis (success | decline | timeout | error)',
+    description:
+      'Nur für Tests: Erzwingt ein bestimmtes Ergebnis (success | decline | timeout | error)',
   })
   @ApiResponse({ status: 201, description: 'Zahlung erfolgreich', type: PaymentView })
   @ApiResponse({ status: 402, description: 'Zahlung abgelehnt', type: PaymentView })
-  @ApiResponse({ status: 504, description: 'Timeout/Pending, bitte erneut senden', type: PaymentView })
+  @ApiResponse({
+    status: 504,
+    description: 'Timeout/Pending, bitte erneut senden',
+    type: PaymentView,
+  })
   async create(
     @Body() dto: CreatePaymentDto,
     @Headers('Transaction-Id') transactionId?: string,
-    @Headers('Simulate-Result') simulateResult?: string
+    @Headers('Simulate-Result') simulateResult?: string,
   ): Promise<PaymentView> {
     const res = await this.svc.create(dto, transactionId, simulateResult);
 
     if (res.status === 'DECLINED') throw new HttpException(res, 402);
     if (res.status === 'ERROR') throw new HttpException(res, 502);
-    if (res.status === 'PENDING') throw new HttpException({ ...res, hint: 'Retry with same Transaction-Id' }, 504);
+    if (res.status === 'PENDING')
+      throw new HttpException({ ...res, hint: 'Retry with same Transaction-Id' }, 504);
 
     return res;
   }
@@ -50,5 +65,7 @@ export class PaymentController {
 
   @Get('health')
   @ApiOperation({ summary: 'Healthcheck' })
-  health() { return { status: 'ok' }; }
+  health() {
+    return { status: 'ok' };
+  }
 }
