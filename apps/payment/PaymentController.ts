@@ -10,9 +10,11 @@ import type { PaymentResult } from './PaymentService';
 export class PaymentController {
   constructor(private readonly service: PaymentService) {}
 
-  @Post('authorize')
-  @ApiOperation({ summary: 'Autorisiert eine Zahlung basierend auf Items & Account-Balance' })
-  authorize(@Body() dto: CreateOrderDto): PaymentResult {
-    return this.service.authorize(dto);
-  }
+@Post('authorize')
+@ApiOperation({ summary: 'Nur Erfolg/Fehler zurückgeben' })
+authorize(@Body() dto: CreateOrderDto): { success: boolean } {
+  const result = this.service.authorize(dto);
+  return { success: result.success };
+}
+
 }
