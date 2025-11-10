@@ -14,14 +14,14 @@ async function bootstrap() {
       'Zahlungen inkl. Idempotenz (Transaction-Id), Test-Header (Simulate-Result) & Events',
     )
     .setVersion('1.0.0')
-    .addServer('http://localhost:3003', 'Local')
+    .addServer('http://localhost:3002', 'Local')
     .build();
 
   const doc = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/docs', app, doc, { swaggerOptions: { persistAuthorization: true } });
 
-  const port = Number(process.env.PORT ?? 3003);
+  const port = Number(process.env.PORT ?? 3002);
   await app.listen(port, '0.0.0.0');
-  console.log(`Payment Service running on port ${port} — Swagger: http://localhost:${port}/docs`);
+  console.log(`Payment Service running on port ${port}`);
 }
 bootstrap();
