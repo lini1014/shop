@@ -1,1 +1,0 @@
-/// controller um anfragen von oms anzunehmen gRPC (proto notwendig)
