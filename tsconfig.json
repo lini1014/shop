@@ -27,7 +27,8 @@
       ],
       "@app/shared/*": [
         "libs/shared/src/*"
-      ]
+      ],
+      "@app/dto/*": ["libs/dto/"]
     }
   }
 }
