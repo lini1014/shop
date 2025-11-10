@@ -15,9 +15,9 @@ type Catalog = Record<number, number>;
 @Injectable()
 export class PaymentService {
   private readonly catalog: Catalog = {
-    1001: 7.0,
-    1002: 60.0,
-    1003: 9.77,
+    101: 7.0,
+    102: 60.0,
+    103: 9.77,
   };
 
   getPrice(productId: number): number {

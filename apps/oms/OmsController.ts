@@ -10,11 +10,12 @@ export class OmsController {
 
   // POST /orders
   @Post()
-  create(@Body() body: CreateOrderDto) {
+  async create(@Body() body: CreateOrderDto) {
     this.logger.log(
       `Forwarding order to service: orderId=${body.orderId}, items=${body.items?.length ?? 0}`,
     );
-    return this.omsService.createOrderFromSelection(body);
+    const order = await this.omsService.createOrderFromSelection(body);
+    return { status: order.status };
   }
 
   // GET /orders/:id — Status der Order holen
