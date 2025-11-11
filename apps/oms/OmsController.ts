@@ -1,7 +1,7 @@
 // apps/oms/OmsController.ts
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Logger } from '@nestjs/common';
 import { OmsService } from './OmsService';
-import { CreateOrderDto } from '../../libs/dto/CreateOrderDTO';
+import { CreateOrderRequestDto } from '../../libs/dto/CreateOrderRequestDto';
 
 @Controller('orders')
 export class OmsController {
@@ -10,12 +10,12 @@ export class OmsController {
 
   // POST /orders
   @Post()
-  async create(@Body() body: CreateOrderDto) {
+  async create(@Body() body: CreateOrderRequestDto) {
     this.logger.log(
-      `Forwarding order to service: orderId=${body.orderId}, items=${body.items?.length ?? 0}`,
+      `Forwarding order to service: name=${body.name}, items=${body.items?.length ?? 0}`,
     );
     const order = await this.omsService.createOrderFromSelection(body);
-    return { status: order.status };
+    return { orderId: order.id, status: order.status };
   }
 
   // GET /orders/:id — Status der Order holen

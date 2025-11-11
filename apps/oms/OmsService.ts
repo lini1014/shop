@@ -3,14 +3,14 @@
  * OMS-Orchestrierung:
  * 1) Inventory RESERVE → reservationId
  * 2) Payment CHARGE
- * 3) Inventory COMMIT (bei Payment-Erfolg) / RELEASE (bei Payment-Fehler)
- * 4) WMS anstoßen (hier: Statuswechsel)
+ * 3) WMS anstoßen (hier: Statuswechsel)
+ *    - Bei Payment-Fehler: Inventory RELEASE (Kompensation)
  */
 import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import axios from 'axios';
-import { CreateOrderDto } from '../../libs/dto/CreateOrderDTO';
 import { ItemDto } from '../../libs/dto/ItemDTO';
 import { OrderDto, OrderStatus } from '../../libs/dto/OrderDTO';
+import { CreateOrderRequestDto } from '../../libs/dto/CreateOrderRequestDto';
 
 // ---- Antwort-Interfaces der Upstream-Services (statisch typisiert) ----
 interface InventoryReserveRes {
@@ -18,15 +18,13 @@ interface InventoryReserveRes {
   reservationId?: string;
   reason?: string;
 }
-interface InventoryCommitRes {
-  ok: boolean;
-}
 interface InventoryReleaseRes {
   ok: boolean;
 }
-// Antwort des Payment-Controllers: { success: boolean }
-interface PaymentAuthorizeRes {
-  success: boolean;
+interface PaymentChargeRes {
+  ok: boolean;
+  transactionId?: string;
+  reason?: string;
 }
 
 @Injectable()
@@ -35,6 +33,11 @@ export class OmsService {
 
   // In-Memory Orders (Demo)
   private orders = new Map<number, OrderDto>();
+  private nextOrderId = 0;
+
+  private generateOrderId(): number {
+    return this.nextOrderId++;
+  }
 
   // Basis-URLs via ENV konfigurierbar
   private readonly inventoryBaseUrl = process.env.INVENTORY_URL ?? 'http://localhost:3001';
@@ -43,10 +46,11 @@ export class OmsService {
   /**
    * Hauptablauf: Reserve → Charge → Commit → WMS
    */
-  async createOrderFromSelection(body: CreateOrderDto): Promise<OrderDto> {
-    // 0) Order anlegen
+  async createOrderFromSelection(body: CreateOrderRequestDto): Promise<OrderDto> {
+    // 0) Order anlegen (ID intern generieren)
+    const newId = this.generateOrderId();
     const order: OrderDto = {
-      id: body.orderId,
+      id: newId,
       items: body.items,
       status: OrderStatus.RECEIVED,
     };
@@ -68,7 +72,11 @@ export class OmsService {
     this.orders.set(order.id, order);
 
     // 2) PAYMENT: CHARGE
+<<<<<<< HEAD
     const payRes = await this.paymentCharge(order.id, body.items, body.firstName, body.lastName);
+=======
+    const payRes = await this.paymentCharge(order.id, body.items, body.name);
+>>>>>>> 78189d655a7dc34dd049d859bc89b30aaf0e7e2d
     if (!payRes.ok) {
       // Kompensation: Reservierung freigeben
       await this.inventoryRelease(reservationId);
@@ -83,20 +91,7 @@ export class OmsService {
     order.status = OrderStatus.PAID;
     this.orders.set(order.id, order);
 
-    // 3) INVENTORY: COMMIT (reserviert → abgebucht)
-    const commitRes = await this.inventoryCommit(reservationId);
-    if (!commitRes.ok) {
-      // (Selten) Payment erfolgreich, Commit fehlgeschlagen → idealerweise Payment-Refund einleiten
-      order.status = OrderStatus.CANCELLED;
-      order.reason = 'INVENTORY_COMMIT_FAILED';
-      this.orders.set(order.id, order);
-      throw new HttpException(
-        { message: 'Inventory-Commit fehlgeschlagen', reason: 'INVENTORY_COMMIT_FAILED' },
-        HttpStatus.BAD_GATEWAY,
-      );
-    }
-
-    // 4) WMS anstoßen (hier simuliert)
+    // 3) WMS anstoßen (hier simuliert)
     order.status = OrderStatus.FULFILLMENT_REQUESTED;
     this.orders.set(order.id, order);
     return order;
@@ -138,23 +133,6 @@ export class OmsService {
     }
   }
 
-  private async inventoryCommit(reservationId: string): Promise<{ ok: boolean }> {
-    try {
-      const { data } = await axios.post<InventoryCommitRes>(
-        `${this.inventoryBaseUrl}/inventory/reservations/commit`,
-        { reservationId },
-      );
-      this.logger.log(`Inventory COMMIT -> ok=${data.ok}`);
-      return { ok: data.ok };
-    } catch (e) {
-      this.logger.error('Inventory COMMIT unreachable', e instanceof Error ? e.message : e);
-      throw new HttpException(
-        { message: 'Inventory-Service nicht erreichbar' },
-        HttpStatus.BAD_GATEWAY,
-      );
-    }
-  }
-
   private async inventoryRelease(reservationId: string): Promise<{ ok: boolean }> {
     try {
       const { data } = await axios.post<InventoryReleaseRes>(
@@ -175,6 +153,7 @@ export class OmsService {
   private async paymentCharge(
     orderId: number,
     items: ItemDto[],
+<<<<<<< HEAD
     firstName: string,
     lastName: string,
   ): Promise<{ ok: boolean; transactionId?: string; totalAmount?: number; reason?: string }> {
@@ -201,6 +180,24 @@ export class OmsService {
 
       // Kein Response oder 5xx → als Infrastrukturproblem behandeln
       this.logger.error('Payment AUTHORIZE unreachable', e instanceof Error ? e.message : e);
+=======
+    name: string,
+  ): Promise<{ ok: boolean; transactionId?: string; totalAmount?: number; reason?: string }> {
+    try {
+      const { data } = await axios.post<PaymentChargeRes>(`${this.paymentBaseUrl}/payments/`, {
+        orderId,
+        items,
+        name,
+      });
+      this.logger.log(`Payment CHARGE -> ok=${data.ok} tx=${data.transactionId ?? '-'}`);
+      return {
+        ok: data.ok,
+        transactionId: data.transactionId,
+        reason: data.reason,
+      };
+    } catch (e) {
+      this.logger.error('Payment CHARGE unreachable', e instanceof Error ? e.message : e);
+>>>>>>> 78189d655a7dc34dd049d859bc89b30aaf0e7e2d
       throw new HttpException(
         { message: 'Payment-Service nicht erreichbar' },
         HttpStatus.BAD_GATEWAY,
