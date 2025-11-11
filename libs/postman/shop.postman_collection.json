@@ -1,0 +1,89 @@
+{
+	"info": {
+		"_postman_id": "53bf36f5-f7aa-480e-94ef-cfa74ede808a",
+		"name": "shop",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "38780124"
+	},
+	"item": [
+		{
+			"name": "Order Erfolgreich",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Maxi Icardi\",\n  \"items\": [\n    { \"productId\": 101, \"quantity\": 3 },\n    { \"productId\": 102, \"quantity\": 4 }\n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/orders"
+			},
+			"response": []
+		},
+		{
+			"name": "Reservierung fehlgeschlagen",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Accept", "value": "application/json" },
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Emirhan Aktürkoğlu\",\n  \"items\": [\n    { \"productId\": 101, \"quantity\": 20 },\n    { \"productId\": 103, \"quantity\": 2 }\n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/orders"
+			},
+			"response": []
+		},
+		{
+			"name": "Zahlung fehlgeschlagen",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Accept", "value": "application/json" },
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Niklas Osimhen\",\n  \"items\": [\n    { \"productId\": 102, \"quantity\": 5 },\n    { \"productId\": 103, \"quantity\": 6 }\n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/orders"
+			},
+			"response": []
+		},
+		{
+			"name": "Order Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/orders/1"
+			},
+			"response": []
+		}
+	]
+}

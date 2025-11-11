@@ -33,7 +33,7 @@ export class OmsService {
 
   // In-Memory Orders (Demo)
   private orders = new Map<number, OrderDto>();
-  private nextOrderId = 100;
+  private nextOrderId = 0;
 
   private generateOrderId(): number {
     return this.nextOrderId++;
