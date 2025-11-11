@@ -1,97 +1,70 @@
 {
-	"info": {
-		"_postman_id": "53bf36f5-f7aa-480e-94ef-cfa74ede808a",
-		"name": "shop",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "38780124"
-	},
-	"item": [
-		{
-			"name": "Order Erfolgreich",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"name\": \"Maxi Icardi\",\n  \"items\": [\n    { \"productId\": 101, \"quantity\": 3 },\n    { \"productId\": 102, \"quantity\": 4 }\n  ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://localhost:3000/orders"
-			},
-			"response": []
-		},
-		{
-			"name": "Reservierung fehlgeschlagen",
-			"request": {
-				"method": "POST",
-				"header": [
-					{ "key": "Accept", "value": "application/json" },
-					{ "key": "Content-Type", "value": "application/json" }
-				],
-				"body": {
-					"mode": "raw",
-<<<<<<< HEAD
-                    "raw": "{\r\n\"orderId\": 1001,\r\n\"items\": [\r\n{ \"productId\": 101, \"quantity\": 20 },\r\n{ \"productId\": 102, \"quantity\": 2 }\r\n],\r\n\"firstName\": \"Niklas\",\r\n\"lastName\": \"Osimhen\"\r\n}",
-=======
-					"raw": "{\n  \"name\": \"Emirhan Aktürkoğlu\",\n  \"items\": [\n    { \"productId\": 101, \"quantity\": 20 },\n    { \"productId\": 103, \"quantity\": 2 }\n  ]\n}",
->>>>>>> 78189d655a7dc34dd049d859bc89b30aaf0e7e2d
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://localhost:3000/orders"
-			},
-			"response": []
-		},
-		{
-			"name": "Zahlung fehlgeschlagen",
-			"request": {
-				"method": "POST",
-				"header": [
-					{ "key": "Accept", "value": "application/json" },
-					{ "key": "Content-Type", "value": "application/json" }
-				],
-				"body": {
-					"mode": "raw",
-<<<<<<< HEAD
-                    "raw": "{\r\n\"orderId\": 1002,\r\n\"items\": [\r\n{ \"productId\": 101, \"quantity\": 1 },\r\n{ \"productId\": 102, \"quantity\": 2 }\r\n],\r\n\"firstName\": \"Maxi\",\r\n\"lastName\": \"Icardi\"\r\n}",
-=======
-					"raw": "{\n  \"name\": \"Niklas Osimhen\",\n  \"items\": [\n    { \"productId\": 102, \"quantity\": 5 },\n    { \"productId\": 103, \"quantity\": 6 }\n  ]\n}",
->>>>>>> 78189d655a7dc34dd049d859bc89b30aaf0e7e2d
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://localhost:3000/orders"
-			},
-			"response": []
-		},
-		{
-			"name": "Order Status",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": "http://localhost:3000/orders/1"
-			},
-			"response": []
-		}
-	]
+  "info": {
+    "_postman_id": "53bf36f5-f7aa-480e-94ef-cfa74ede808a",
+    "name": "shop",
+    "schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+    "_exporter_id": "38780124"
+  },
+  "item": [
+    {
+      "name": "Order Erfolgreich",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json", "type": "text" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Niklas Osimhen\",\n  \"items\": [\n    { \"productId\": 102, \"quantity\": 3 },\n    { \"productId\": 101, \"quantity\": 2 }\n  ]\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "http://localhost:3000/orders"
+      },
+      "response": []
+    },
+    {
+      "name": "Reservierung fehlgeschlagen",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Emirhan Aktürkoğlu\",\n  \"items\": [\n    { \"productId\": 101, \"quantity\": 20 },\n    { \"productId\": 103, \"quantity\": 2 }\n  ]\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "http://localhost:3000/orders"
+      },
+      "response": []
+    },
+    {
+      "name": "Zahlung fehlgeschlagen",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Maxi Icardi\",\n  \"items\": [\n    { \"productId\": 101, \"quantity\": 1 },\n    { \"productId\": 102, \"quantity\": 1 }\n  ]\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "http://localhost:3000/orders"
+      },
+      "response": []
+    },
+    {
+      "name": "Order Status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "http://localhost:3000/orders/1"
+      },
+      "response": []
+    }
+  ]
 }
