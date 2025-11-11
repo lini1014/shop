@@ -47,8 +47,8 @@ export class OmsService {
    * Hauptablauf: Reserve → Charge → Commit → WMS
    */
   async createOrderFromSelection(body: CreateOrderRequestDto): Promise<OrderDto> {
-    // 0) Order anlegen (ID intern generieren)
-    const newId = this.generateOrderId();
+    // 0) Order anlegen (ID aus Request oder intern generieren)
+    const newId = body.orderId ?? this.generateOrderId();
     const order: OrderDto = {
       id: newId,
       items: body.items,
@@ -71,7 +71,7 @@ export class OmsService {
     order.status = OrderStatus.RESERVED;
     this.orders.set(order.id, order);
 
-    // 2) PAYMENT: CHARGE
+    // 2) PAYMENT: AUTHORIZE (Payment-Service erwartet firstName/lastName)
     const payRes = await this.paymentCharge(order.id, body.items, body.firstName, body.lastName);
     if (!payRes.ok) {
       // Kompensation: Reservierung freigeben
@@ -153,17 +153,18 @@ export class OmsService {
     lastName: string,
   ): Promise<{ ok: boolean; transactionId?: string; totalAmount?: number; reason?: string }> {
     try {
-      const { data } = await axios.post<PaymentChargeRes>(`${this.paymentBaseUrl}/payments/`, {
-        orderId,
-        items,
-        firstName,
-        lastName,
-      });
-      this.logger.log(`Payment CHARGE -> ok=${data.ok} tx=${data.transactionId ?? '-'}`);
+      const { data } = await axios.post<{ success: boolean }>(
+        `${this.paymentBaseUrl}/payments/authorize`,
+        {
+          orderId,
+          items,
+          firstName,
+          lastName,
+        },
+      );
+      this.logger.log(`Payment AUTHORIZE -> success=${data.success}`);
       return {
-        ok: data.ok,
-        transactionId: data.transactionId,
-        reason: data.reason,
+        ok: data.success,
       };
     } catch (e) {
       this.logger.error('Payment CHARGE unreachable', e instanceof Error ? e.message : e);

@@ -15,7 +15,7 @@ export class OmsController {
       `Forwarding order to service: firstName=${body.firstName}, lastName=${body.lastName}, items=${body.items?.length ?? 0}`,
     );
     const order = await this.omsService.createOrderFromSelection(body);
-    return { orderId: order.id, status: order.status };
+    return { status: order.status };
   }
 
   // GET /orders/:id — Status der Order holen
