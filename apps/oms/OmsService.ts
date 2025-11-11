@@ -24,9 +24,10 @@ interface InventoryCommitRes {
 interface InventoryReleaseRes {
   ok: boolean;
 }
-// Antwort des Payment-Controllers: { success: boolean }
-interface PaymentAuthorizeRes {
-  success: boolean;
+interface PaymentChargeRes {
+  ok: boolean;
+  transactionId?: string;
+  reason?: string;
 }
 
 @Injectable()
@@ -154,7 +155,6 @@ export class OmsService {
       );
     }
   }
-
   private async inventoryRelease(reservationId: string): Promise<{ ok: boolean }> {
     try {
       const { data } = await axios.post<InventoryReleaseRes>(
@@ -178,28 +178,19 @@ export class OmsService {
     accountBalance: number,
   ): Promise<{ ok: boolean; transactionId?: string; totalAmount?: number; reason?: string }> {
     try {
-      const { data } = await axios.post<PaymentAuthorizeRes>(
-        `${this.paymentBaseUrl}/payments/authorize`,
-        { orderId, items, accountBalance },
-      );
-      this.logger.log(`Payment AUTHORIZE -> success=${data.success}`);
-      return { ok: !!data.success };
-    } catch (e: any) {
-      const status = e?.response?.status as number | undefined;
-      const respData = e?.response?.data;
-      if (status && status >= 400 && status < 500) {
-        // Fachlicher/Validierungs-Fehler vom Payment-Service → als ok:false zurückgeben
-        const reason = typeof respData?.message === 'string'
-          ? respData.message
-          : Array.isArray(respData?.message)
-            ? respData.message.join(', ')
-            : 'PAYMENT_BAD_REQUEST';
-        this.logger.warn(`Payment AUTHORIZE client error ${status}: ${reason}`);
-        return { ok: false, reason };
-      }
-
-      // Kein Response oder 5xx → als Infrastrukturproblem behandeln
-      this.logger.error('Payment AUTHORIZE unreachable', e instanceof Error ? e.message : e);
+      const { data } = await axios.post<PaymentChargeRes>(`${this.paymentBaseUrl}/payments/`, {
+        orderId,
+        items,
+        accountBalance,
+      });
+      this.logger.log(`Payment CHARGE -> ok=${data.ok} tx=${data.transactionId ?? '-'}`);
+      return {
+        ok: data.ok,
+        transactionId: data.transactionId,
+        reason: data.reason,
+      };
+    } catch (e) {
+      this.logger.error('Payment CHARGE unreachable', e instanceof Error ? e.message : e);
       throw new HttpException(
         { message: 'Payment-Service nicht erreichbar' },
         HttpStatus.BAD_GATEWAY,
