@@ -85,7 +85,9 @@ export class OmsService implements OnModuleInit {
     }
     const reservationId = reserveRes.reservationId;
     order.status = OrderStatus.RESERVED;
-    this.orders.set(order.id, order); // 2) PAYMENT: AUTHORIZE (Payment-Service erwartet firstName/lastName)
+    this.orders.set(order.id, order);
+
+    // 2) PAYMENT: AUTHORIZE (Payment-Service erwartet firstName/lastName)
 
     const payRes = await this.paymentCharge(order.id, body.items, body.firstName, body.lastName);
     if (!payRes.ok) {
@@ -120,7 +122,9 @@ export class OmsService implements OnModuleInit {
 
     this.orders.set(order.id, order);
     return order;
-  } // Get methode: Order nach ID holen, 404 wenn nicht vorhanden
+  }
+
+  // Get methode: Order nach ID holen, 404 wenn nicht vorhanden
 
   getOrderById(id: number): OrderDto {
     const order = this.orders.get(id);
