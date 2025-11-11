@@ -27,7 +27,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'WMS_STATUS_CLIENT', //*Ein Name, mit der ein Service geholt wird
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://guest:guest@127.0.0.1:5672'],
+          urls: [process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672'],
           /**Der "Funkkanal", auf dem der Status gesendet wird
            *Logging muss hier zuhören*/
           queue: 'status_updates_queue',
@@ -40,7 +40,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
             name: 'LOG_CLIENT', //* Implementieren des LogClients
           transport: Transport.RMQ,
           options: {
-            urls: ['amqp://guest:guest@127.0.0.1:5672'],
+            urls: [process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672'],
             queue: 'log_queue',
             queueOptions: {
               durable: true,

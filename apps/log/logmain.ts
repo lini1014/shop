@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<RmqOptions>(LogModule, {
     transport: Transport.RMQ,
     options: {
-      urls: ['amqp://guest:guest@127.0.0.1:5672'],
+      urls: [process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672'],
       //* Hier wird der Kanal für den Log-Service definiert
       queue: 'log_queue',
       queueOptions: {

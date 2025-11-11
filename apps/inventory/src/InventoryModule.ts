@@ -10,10 +10,10 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'LOG_CLIENT',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://guest:guest@127.0.0.1:5672'],
+          urls: [process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672'],
           queue: 'log_queue',
           queueOptions: {
-            durable: false,
+            durable: true,
           },
         },
       },

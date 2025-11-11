@@ -26,8 +26,8 @@ export async function publishLog(level: LogLevel, message: string, context?: Rec
     timestamp: new Date().toISOString(),
     context,
   };
-  // Fire-and-forget: emit -> @MessagePattern('log')
-  await getClient().emit('log', payload).toPromise();
+  // Fire-and-forget: must match @MessagePattern('log_message') in log-service
+  await getClient().emit('log_message', payload).toPromise();
 }
 
 // Convenience

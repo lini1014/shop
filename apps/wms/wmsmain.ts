@@ -8,7 +8,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       //*URL zu dem RabbitMQ Server
-      urls: ['amqp://guest:guest@127.0.0.1:5672'],
+      urls: [process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672'],
       /** Das stellt den "Funkkanal" dar, auf dem der WMS lauscht
        * Hierhin schickt das OMS Nachrichten */
       queue: 'wms_queue',
