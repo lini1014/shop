@@ -33,3 +33,21 @@
 2025-11-11T23:26:55.746Z [OMS] [WARN]: Inventory RELEASE (Kompensation) -> ok=true
 2025-11-11T23:26:55.746Z [OMS] [WARN]: Bestellung 3 storniert. Grund: PAYMENT_FAILED.
 --------------------
+--- Log-Service gestartet ---
+2025-11-11T23:36:07.520Z [INVENTORY] [INFO]: Inventory Service verbunden mit Log-Service
+2025-11-11T23:36:07.879Z [OMS] [INFO]: OMS Service verbunden mit Log-Service und WMS-Service
+2025-11-11T23:36:07.932Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
+2025-11-11T23:36:14.645Z [OMS] [INFO]: Bestellung 0 ERHALTEN.
+2025-11-11T23:36:14.679Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762904174679
+2025-11-11T23:36:14.683Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762904174679
+2025-11-11T23:36:14.721Z [OMS] [ERROR]: Payment CHARGE unreachable: Request failed with status code 400
+2025-11-11T23:36:16.181Z [OMS] [INFO]: Bestellung 1 ERHALTEN.
+2025-11-11T23:36:16.183Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762904176183
+2025-11-11T23:36:16.184Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762904176183
+2025-11-11T23:36:16.188Z [PAYMENT] [INFO]: Zahlung für Order 1 (Betrag: 74) ERFOLGREICH.
+2025-11-11T23:36:16.189Z [OMS] [INFO]: Bestellung 1 erfolgreich bezahlt.
+2025-11-11T23:36:16.189Z [OMS] [INFO]: Payment AUTHORIZE -> success=true reason=- 
+2025-11-11T23:36:16.189Z [OMS] [INFO]: Bestellung 1 an WMS (Queue: wms_queue) weitergeleitet.
+2025-11-11T23:36:16.193Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-1
+2025-11-11T23:36:18.203Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-1
+2025-11-11T23:36:18.203Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-1 ausgewählt.
