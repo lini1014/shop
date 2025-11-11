@@ -3,7 +3,7 @@ import { LogService } from './log-service';
 
 @Module({
   imports: [],
-  providers: [LogService],
-  controllers: [],
+  providers: [],
+  controllers: [LogService],
 })
 export class LogModule {}

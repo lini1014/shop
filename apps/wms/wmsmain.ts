@@ -15,6 +15,7 @@ async function bootstrap() {
       queueOptions: {
         durable: false, //** wenn true, dann überlebt Queue den Server Neustart */
       },
+      noAck: false,
     },
   });
 

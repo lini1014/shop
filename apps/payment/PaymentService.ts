@@ -73,10 +73,6 @@ export class PaymentService implements OnModuleInit {
    * Prüft, ob das Konto-Guthaben reicht und gibt das Ergebnis zurück.
    */
   authorize(create: CreateOrderDto): PaymentResult {
-    this.log(
-      'info',
-      `AUTH START order=${create.orderId} customer=${create.firstName} ${create.lastName} items=${create.items?.length ?? 0}`,
-    );
     const normalize = (s: string) => s.trim().toLowerCase();
     const fullKey = `${normalize(create.firstName)} ${normalize(create.lastName)}`;
     const accountBalance = this.customerBalances[fullKey];
@@ -89,19 +85,8 @@ export class PaymentService implements OnModuleInit {
     const lineItems = this.priceItems(create.items);
     const totalAmount = lineItems.reduce((s, li) => s + li.lineTotal, 0);
     const total = +totalAmount.toFixed(2);
-    const liSummary = lineItems
-      .map((li) => `${li.productId}x${li.quantity}@${li.unitPrice}=${li.lineTotal}`)
-      .join(', ');
-    this.log(
-      'info',
-      `AUTH PRICED order=${create.orderId} total=${total} items=[${liSummary}]`,
-    );
 
     const success = accountBalance >= total;
-    this.log(
-      'info',
-      `AUTH DECISION order=${create.orderId} ${success ? 'SUCCEED' : 'FAIL'} total=${total} balance=${accountBalance}`,
-    );
 
     const res: PaymentResult = {
       orderId: create.orderId,
@@ -116,8 +101,6 @@ export class PaymentService implements OnModuleInit {
      } else {
       this.log('warn', `Zahlung für Order ${create.orderId} (Betrag: ${total}) ABGELEHNT. Grund: ${res.reason}`);
      }
-    
-    this.log('info', `AUTH END order=${create.orderId} success=${res.success}`);
     return res;
   }
 }

@@ -2,9 +2,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable prettier/prettier */
 /// kernlogik
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, OnModuleInit, Controller } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
+import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { Channel, Message } from 'amqplib';
 
 //* Aussehen einer Order-Nachricht (Beispiel)
@@ -13,7 +13,7 @@ interface OrderPayload {
   items: any[];
 }
 
-@Injectable()
+@Controller()
 export class WmsService implements OnModuleInit {
   //* Hier wird der Sender (Client) injiziert, der Status-Updates verschickt
   constructor(
@@ -51,7 +51,7 @@ export class WmsService implements OnModuleInit {
    * Diese Methode reagiert automatisch auf Nachrichten
    * auf dem "wms_queue" Kanal
    */
-  @MessagePattern('order_received')
+  @EventPattern('order_received')
   async handleOrderReceived(@Payload() data: OrderPayload, @Ctx() context: RmqContext) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, prettier/prettier
     const channel : Channel = context.getChannelRef();

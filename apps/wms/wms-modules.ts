@@ -49,7 +49,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         },
     ]),
   ],
-  providers: [WmsService] /** Service, der die Logik enthält */,
-  controllers: [],
+  providers: [] /** Service, der die Logik enthält */,
+  controllers: [WmsService],
 }) /** Da wir nicht auf HTTP Anfragen reagieren, brauchen wir auch keinen Controller  */
 export class WmsModule {}

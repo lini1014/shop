@@ -1,11 +1,139 @@
---- Log-Service gestartet ---
---- Log-Service gestartet ---
---- Log-Service gestartet ---
---- Log-Service gestartet ---
---- Log-Service gestartet ---
---- Log-Service gestartet ---
---- Log-Service gestartet ---
---- Log-Service gestartet ---
---- Log-Service gestartet ---
---- Log-Service gestartet ---
---- Log-Service gestartet ---
+2025-11-11T22:06:49.288Z [OMS] [INFO]: Bestellung 1001 ERHALTEN.
+2025-11-11T22:06:49.290Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762898809290
+2025-11-11T22:06:49.292Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762898809290
+2025-11-11T22:06:49.294Z [PAYMENT] [INFO]: AUTH START order=1001 customer=Niklas Osimhen items=2 AAAAAAAAAAAAAAAAAAA
+2025-11-11T22:06:49.295Z [PAYMENT] [INFO]: AUTH PRICED order=1001 total=74 items=[102x1@60=60, 101x2@7=14] AAAAAAAAAAAAAAAAAAA
+2025-11-11T22:06:49.295Z [PAYMENT] [INFO]: Zahlung für Order 1001 (Betrag: 74) ERFOLGREICH.
+2025-11-11T22:06:49.295Z [PAYMENT] [INFO]: AUTH DECISION order=1001 SUCCEED total=74 balance=200AAAAAAAAAAAAAAAAAAAA
+2025-11-11T22:06:49.295Z [PAYMENT] [INFO]: AUTH END order=1001 success=true
+2025-11-11T22:06:49.296Z [OMS] [INFO]: Bestellung 1001 an WMS (Queue: wms_queue) weitergeleitet.
+2025-11-11T22:06:49.296Z [OMS] [INFO]: Payment AUTHORIZE -> success=true tx=-  AAAAAAAAAAAAAAAAAAAAAAA
+2025-11-11T22:06:49.296Z [OMS] [INFO]: Bestellung 1001 erfolgreich bezahlt.
+2025-11-11T22:06:49.298Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-1001
+2025-11-11T22:06:51.309Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-1001
+2025-11-11T22:06:51.309Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-1001 ausgewählt.
+2025-11-11T22:06:53.317Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung verpackt für Bestellung ORD-1001
+2025-11-11T22:06:53.317Z [WMS] [INFO]: [WMS] Bestellung ORD-1001 verpackt.
+2025-11-11T22:06:54.329Z [WMS] [INFO]: [WMS] Bestellung ORD-1001 versandt
+2025-11-11T22:06:54.329Z [WMS] [INFO]: [WMS] Bestellung ORD-1001 abgeschlossen.
+2025-11-11T22:06:54.329Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung versandt für Bestellung ORD-1001
+
+_____
+-
+--
+
+2025-11-11T22:12:01.515Z [OMS] [INFO]: Bestellung 1003 ERHALTEN.
+2025-11-11T22:12:01.517Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762899121517
+2025-11-11T22:12:01.518Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762899121517
+2025-11-11T22:12:01.521Z [PAYMENT] [INFO]: AUTH START order=1003 customer=Maxi Icardi items=1
+2025-11-11T22:12:01.521Z [PAYMENT] [WARN]: Zahlung für Order 1003 (Betrag: 7) ABGELEHNT. Grund: INSUFFICIENT_FUNDS
+2025-11-11T22:12:01.521Z [PAYMENT] [INFO]: AUTH PRICED order=1003 total=7 items=[101x1@7=7] AAAAAAAAAAAAAAAAAAA
+2025-11-11T22:12:01.521Z [PAYMENT] [INFO]: AUTH DECISION order=1003 FAIL total=7 balance=4.2
+2025-11-11T22:12:01.521Z [PAYMENT] [INFO]: AUTH END order=1003 success=false AAAAAAAAAAAAAAAAAAA
+2025-11-11T22:12:01.522Z [OMS] [INFO]: Payment AUTHORIZE -> success=false tx=- (mach da in verständliuche worten) 
+2025-11-11T22:12:01.524Z [INVENTORY] [INFO]: Reservierung res-1762899121517 freigegeben
+2025-11-11T22:12:01.524Z [INVENTORY] [INFO]: ReleaseReservation: res-1762899121517
+2025-11-11T22:12:01.524Z [OMS] [WARN]: Inventory RELEASE (Kompensation) -> ok=true (mach schöner)
+2025-11-11T22:12:01.524Z [OMS] [WARN]: Bestellung 1003 storniert. Grund: PAYMENT_FAILED.
+2025-11-11T22:15:55.833Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
+2025-11-11T22:17:13.921Z [OMS] [INFO]: Bestellung 1001 ERHALTEN.
+2025-11-11T22:17:13.925Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762899433925
+2025-11-11T22:17:13.925Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762899433925
+2025-11-11T22:17:13.956Z [PAYMENT] [INFO]: Zahlung für Order 1001 (Betrag: 74) ERFOLGREICH.
+2025-11-11T22:17:13.959Z [OMS] [INFO]: Payment AUTHORIZE -> success=true tx=-
+2025-11-11T22:17:13.959Z [OMS] [INFO]: Bestellung 1001 erfolgreich bezahlt.
+2025-11-11T22:17:13.959Z [OMS] [INFO]: Bestellung 1001 an WMS (Queue: wms_queue) weitergeleitet.
+2025-11-11T22:17:13.962Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-1001
+2025-11-11T22:17:15.973Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-1001
+2025-11-11T22:17:15.973Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-1001 ausgewählt.
+2025-11-11T22:17:17.978Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung verpackt für Bestellung ORD-1001
+2025-11-11T22:17:17.978Z [WMS] [INFO]: [WMS] Bestellung ORD-1001 verpackt.
+2025-11-11T22:17:18.984Z [WMS] [INFO]: [WMS] Bestellung ORD-1001 versandt
+2025-11-11T22:17:18.984Z [WMS] [INFO]: [WMS] Bestellung ORD-1001 abgeschlossen.
+2025-11-11T22:17:18.984Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung versandt für Bestellung ORD-1001
+
+
+
+
+
+
+2025-11-11T22:17:26.684Z [OMS] [INFO]: Bestellung 1001 ERHALTEN.
+2025-11-11T22:17:26.687Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762899446687
+2025-11-11T22:17:26.687Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762899446687
+2025-11-11T22:17:26.692Z [PAYMENT] [INFO]: Zahlung für Order 1001 (Betrag: 74) ERFOLGREICH.
+2025-11-11T22:17:26.692Z [OMS] [INFO]: Payment AUTHORIZE -> success=true tx=-
+2025-11-11T22:17:26.692Z [OMS] [INFO]: Bestellung 1001 an WMS (Queue: wms_queue) weitergeleitet.
+2025-11-11T22:17:26.692Z [OMS] [INFO]: Bestellung 1001 erfolgreich bezahlt.
+2025-11-11T22:17:26.694Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-1001
+2025-11-11T22:17:28.697Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-1001
+2025-11-11T22:17:28.697Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-1001 ausgewählt.
+2025-11-11T22:17:30.708Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung verpackt für Bestellung ORD-1001
+2025-11-11T22:17:30.708Z [WMS] [INFO]: [WMS] Bestellung ORD-1001 verpackt.
+2025-11-11T22:17:31.715Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung versandt für Bestellung ORD-1001
+2025-11-11T22:17:31.715Z [WMS] [INFO]: [WMS] Bestellung ORD-1001 versandt
+2025-11-11T22:17:31.715Z [WMS] [INFO]: [WMS] Bestellung ORD-1001 abgeschlossen.
+----------------
+2025-11-11T22:18:23.402Z [OMS] [INFO]: Bestellung 1002 ERHALTEN.
+2025-11-11T22:18:23.404Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762899503404
+2025-11-11T22:18:23.405Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762899503404
+2025-11-11T22:18:23.408Z [PAYMENT] [INFO]: Zahlung für Order 1002 (Betrag: 16.77) ERFOLGREICH.
+2025-11-11T22:18:23.409Z [OMS] [INFO]: Bestellung 1002 erfolgreich bezahlt.
+2025-11-11T22:18:23.409Z [OMS] [INFO]: Payment AUTHORIZE -> success=true tx=-
+2025-11-11T22:18:23.409Z [OMS] [INFO]: Bestellung 1002 an WMS (Queue: wms_queue) weitergeleitet.
+2025-11-11T22:18:23.411Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-1002
+2025-11-11T22:18:25.419Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-1002 ausgewählt.
+2025-11-11T22:18:25.419Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-1002
+2025-11-11T22:18:27.421Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung verpackt für Bestellung ORD-1002
+2025-11-11T22:18:27.421Z [WMS] [INFO]: [WMS] Bestellung ORD-1002 verpackt.
+2025-11-11T22:18:28.429Z [WMS] [INFO]: [WMS] Bestellung ORD-1002 abgeschlossen.
+2025-11-11T22:18:28.429Z [WMS] [INFO]: [WMS] Bestellung ORD-1002 versandt
+2025-11-11T22:18:28.429Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung versandt für Bestellung ORD-1002
+2025-11-11T22:18:56.921Z [OMS] [INFO]: Bestellung 1002 ERHALTEN.
+2025-11-11T22:18:56.923Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762899536923
+2025-11-11T22:18:56.925Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762899536923
+2025-11-11T22:18:56.928Z [PAYMENT] [WARN]: Zahlung für Order 1002 (Betrag: 9777) ABGELEHNT. Grund: INSUFFICIENT_FUNDS
+2025-11-11T22:18:56.929Z [OMS] [INFO]: Payment AUTHORIZE -> success=false tx=-
+2025-11-11T22:18:56.929Z [INVENTORY] [INFO]: Reservierung res-1762899536923 freigegeben
+2025-11-11T22:18:56.929Z [INVENTORY] [INFO]: ReleaseReservation: res-1762899536923
+2025-11-11T22:18:56.931Z [OMS] [WARN]: Inventory RELEASE (Kompensation) -> ok=true
+2025-11-11T22:18:56.931Z [OMS] [WARN]: Bestellung 1002 storniert. Grund: PAYMENT_FAILED.
+2025-11-11T22:19:06.375Z [OMS] [INFO]: Bestellung 1002 ERHALTEN.
+2025-11-11T22:19:06.376Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762899546376
+2025-11-11T22:19:06.377Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762899546376
+2025-11-11T22:19:06.381Z [PAYMENT] [INFO]: Zahlung für Order 1002 (Betrag: 124.24) ERFOLGREICH.
+2025-11-11T22:19:06.382Z [OMS] [INFO]: Payment AUTHORIZE -> success=true tx=-
+2025-11-11T22:19:06.382Z [OMS] [INFO]: Bestellung 1002 an WMS (Queue: wms_queue) weitergeleitet.
+2025-11-11T22:19:06.382Z [OMS] [INFO]: Bestellung 1002 erfolgreich bezahlt.
+2025-11-11T22:19:06.383Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-1002
+2025-11-11T22:19:08.384Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-1002 ausgewählt.
+2025-11-11T22:19:08.384Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-1002
+2025-11-11T22:19:10.399Z [WMS] [INFO]: [WMS] Bestellung ORD-1002 verpackt.
+2025-11-11T22:19:10.399Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung verpackt für Bestellung ORD-1002
+2025-11-11T22:19:11.407Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung versandt für Bestellung ORD-1002
+2025-11-11T22:19:11.407Z [WMS] [INFO]: [WMS] Bestellung ORD-1002 abgeschlossen.
+2025-11-11T22:19:11.407Z [WMS] [INFO]: [WMS] Bestellung ORD-1002 versandt
+2025-11-11T22:24:00.763Z [INVENTORY] [INFO]: Inventory Service verbunden mit Log-Service
+2025-11-11T22:24:03.933Z [OMS] [INFO]: Bestellung 1002 ERHALTEN.
+2025-11-11T22:24:03.951Z [INVENTORY] [WARN]: Nicht genug Bestand für SKU-789: 8 < 12
+2025-11-11T22:24:03.954Z [OMS] [WARN]: Bestellung 1002 storniert. Grund: OUT_OF_STOCK.
+2025-11-11T22:24:03.954Z [OMS] [INFO]: Inventory RESERVE -> ok=false reservationId=-
+
+-------------------------------
+
+
+2025-11-11T22:26:39.536Z [OMS] [WARN]: Versuch, nicht existierende Order 1 abzurufen.
+2025-11-11T22:27:56.811Z [OMS] [INFO]: Bestellung 1001 ERHALTEN.
+2025-11-11T22:27:56.815Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762900076815
+2025-11-11T22:27:56.816Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762900076815
+2025-11-11T22:27:56.820Z [PAYMENT] [INFO]: Zahlung für Order 1001 (Betrag: 74) ERFOLGREICH.
+2025-11-11T22:27:56.820Z [OMS] [INFO]: Payment AUTHORIZE -> success=true tx=-
+2025-11-11T22:27:56.820Z [OMS] [INFO]: Bestellung 1001 an WMS (Queue: wms_queue) weitergeleitet.
+2025-11-11T22:27:56.820Z [OMS] [INFO]: Bestellung 1001 erfolgreich bezahlt.
+2025-11-11T22:27:56.823Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-1001
+2025-11-11T22:27:58.828Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-1001 ausgewählt.
+2025-11-11T22:27:58.828Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-1001
+2025-11-11T22:28:00.841Z [WMS] [INFO]: [WMS] Bestellung ORD-1001 verpackt.
+2025-11-11T22:28:00.841Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung verpackt für Bestellung ORD-1001
+2025-11-11T22:28:01.852Z [WMS] [INFO]: [WMS] Bestellung ORD-1001 abgeschlossen.
+2025-11-11T22:28:01.852Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung versandt für Bestellung ORD-1001
+2025-11-11T22:28:01.852Z [WMS] [INFO]: [WMS] Bestellung ORD-1001 versandt
