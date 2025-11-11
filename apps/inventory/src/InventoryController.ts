@@ -44,17 +44,6 @@ export class InventoryController {
   }
 
   /**
-   * POST /inventory/reservations/commit
-   * Verbindlich abbuchen (Step 3 in OMS)
-   */
-  @Post('reservations/commit')
-  async commitReservation(@Body() body: { reservationId: string }) {
-    this.logger.log(`Commit Reservation ${body.reservationId}`);
-    const ok = await this.service.commitReservation(body.reservationId);
-    return { ok };
-  }
-
-  /**
    * POST /inventory/reservations/release
    * Reservierung wieder freigeben (bei Payment-Fehler)
    */

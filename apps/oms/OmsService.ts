@@ -6,7 +6,7 @@
  * 3) WMS anstoßen (hier: Statuswechsel)
  * - Bei Payment-Fehler: Inventory RELEASE (Kompensation)
  */
-import { Injectable, HttpException, HttpStatus, Inject, OnModuleInit } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Inject, OnModuleInit, ConflictException } from '@nestjs/common';
 import axios from 'axios';
 import { ItemDto } from '../../libs/dto/ItemDTO';
 import { OrderDto, OrderStatus } from '../../libs/dto/OrderDTO';
@@ -78,10 +78,10 @@ export class OmsService implements OnModuleInit {
       order.reason = 'OUT_OF_STOCK';
       this.orders.set(order.id, order);
       this.log('warn', `Bestellung ${order.id} storniert. Grund: OUT_OF_STOCK.`);
-      throw new HttpException(
-        { message: 'Reservierung im Inventory fehlgeschlagen', reason: 'OUT_OF_STOCK' },
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new ConflictException({
+        message: 'Reservierung im Inventory fehlgeschlagen',
+        reason: 'OUT_OF_STOCK',
+      });
     }
     const reservationId = reserveRes.reservationId;
     order.status = OrderStatus.RESERVED;
