@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Injectable } from '@nestjs/common';
-import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
+import { Controller } from '@nestjs/common';
+import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Channel, Message } from 'amqplib';
@@ -15,7 +15,7 @@ interface LogPayload {
   timestamp: string; 
 }  
 
-@Injectable()
+@Controller()
 export class LogService {
   private logFilePath: string;
 
@@ -37,7 +37,7 @@ export class LogService {
     console.error('Konnte Log-Datei nicht initial schreiben', error);
   }
  }
-@MessagePattern('log_message')
+@EventPattern('log_message')
 async handleLog(@Payload() data: LogPayload, @Ctx() context: RmqContext) {
   const channel : Channel = context.getChannelRef();
   const originalMsg : Message = context.getMessage();
