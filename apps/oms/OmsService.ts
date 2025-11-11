@@ -22,9 +22,8 @@ interface InventoryReserveRes {
 interface InventoryReleaseRes {
   ok: boolean;
 }
-interface PaymentChargeRes {
+interface PaymentCharge {
   ok: boolean;
-  transactionId?: string;
   reason?: string;
 }
 
@@ -57,13 +56,14 @@ export class OmsService implements OnModuleInit {
   } // Basis-URLs via ENV konfigurierbar
 
   private readonly inventoryBaseUrl = process.env.INVENTORY_URL ?? 'http://localhost:3001';
-  private readonly paymentBaseUrl = process.env.PAYMENT_URL ?? 'http://localhost:3002'; /**
+  private readonly paymentBaseUrl = process.env.PAYMENT_URL ?? 'http://localhost:3002';
+  /**
    * Hauptablauf: Reserve → Charge → Commit → WMS
    */
 
   async createOrderFromSelection(body: CreateOrderRequestDto): Promise<OrderDto> {
-    // 0) Order anlegen (ID aus Request oder intern generieren)
-    const newId = body.orderId ?? this.generateOrderId();
+    // 0) Order anlegen (ID wird intern generiert)
+    const newId = this.generateOrderId();
     const order: OrderDto = {
       id: newId,
       items: body.items,
@@ -183,11 +183,10 @@ export class OmsService implements OnModuleInit {
     items: ItemDto[],
     firstName: string,
     lastName: string,
-  ): Promise<{ ok: boolean; transactionId?: string; totalAmount?: number; reason?: string }> {
+  ): Promise<PaymentCharge> {
     try {
       const { data } = await axios.post<{
         success: boolean;
-        transactionId?: string;
         reason?: string;
       }>(`${this.paymentBaseUrl}/payments/authorize`, {
         orderId,
@@ -197,12 +196,11 @@ export class OmsService implements OnModuleInit {
       });
       this.log(
         'info',
-        `Payment AUTHORIZE -> success=${data.success} tx=${data.transactionId ?? '-'}`,
+        `Payment AUTHORIZE -> success=${data.success} reason=${data.reason ?? '-'} `,
       );
       return {
         ok: data.success,
         reason: data.reason,
-        transactionId: data.transactionId,
       };
     } catch (e) {
       const errorDetails = e instanceof Error ? e.message : String(e);
