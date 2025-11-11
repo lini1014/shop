@@ -48,6 +48,17 @@ async handleLog(@Payload() data: LogPayload, @Ctx() context: RmqContext) {
 
     await fs.promises.appendFile(this.logFilePath, logEntry);
 
+    // Separator am Ende eines Prozesses (heuristisch):
+    // - Erfolg: WMS meldet "abgeschlossen"
+    // - Fehler/Abbruch: OMS meldet "storniert" oder "fehlgeschlagen"
+    const isTerminal =
+      (data.service === 'WMS' && /abgeschlossen/i.test(data.message)) ||
+      (data.service === 'OMS' && (/storniert/i.test(data.message) || /fehlgeschlagen/i.test(data.message)));
+
+    if (isTerminal) {
+      await fs.promises.appendFile(this.logFilePath, '--------------------\n');
+    }
+
     channel.ack(originalMsg);
 
   }

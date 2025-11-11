@@ -16,7 +16,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"orderId\": 1001,\n  \"items\": [\n    { \"productId\": 102, \"quantity\": 1 },\n    { \"productId\": 101, \"quantity\": 2 }\n  ],\n  \"firstName\": \"Niklas\",\n  \"lastName\": \"Osimhen\"\n}",
+          "raw": "{\n  \"items\": [\n    { \"productId\": 102, \"quantity\": 1 },\n    { \"productId\": 101, \"quantity\": 2 }\n  ],\n  \"firstName\": \"Niklas\",\n  \"lastName\": \"Osimhen\"\n}",
           "options": { "raw": { "language": "json" } }
         },
         "url": "http://localhost:3000/orders"
@@ -33,7 +33,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"orderId\": 1002,\n  \"items\": [\n    { \"productId\": 101, \"quantity\": 1 },\n    { \"productId\": 103, \"quantity\": 1 }\n  ],\n  \"firstName\": \"David\",\n  \"lastName\": \"Ederson\"\n}",
+          "raw": "{\n  \"items\": [\n    { \"productId\": 101, \"quantity\": 1 },\n    { \"productId\": 103, \"quantity\": 12 }\n  ],\n  \"firstName\": \"Niklas\",\n  \"lastName\": \"Osimhen\"\n}",
           "options": { "raw": { "language": "json" } }
         },
         "url": "http://localhost:3000/orders"
@@ -50,7 +50,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"orderId\": 1003,\n  \"items\": [\n    { \"productId\": 101, \"quantity\": 1 }\n  ],\n  \"firstName\": \"Maxi\",\n  \"lastName\": \"Icardi\"\n}",
+          "raw": "{\n  \"items\": [\n    { \"productId\": 101, \"quantity\": 1 },\n    { \"productId\": 103, \"quantity\": 3 }\n  ],\n  \"firstName\": \"Maxi\",\n  \"lastName\": \"Icardi\"\n}",
           "options": { "raw": { "language": "json" } }
         },
         "url": "http://localhost:3000/orders"
