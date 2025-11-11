@@ -39,7 +39,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\"orderId\": 6001,\r\n\"items\": [\r\n{ \"productId\": 101, \"quantity\": 20 },\r\n{ \"productId\": 102, \"quantity\": 2 }\r\n],\r\n\"accountBalance\": 200.0\r\n}",
+                    "raw": "{\r\n\"orderId\": 1001,\r\n\"items\": [\r\n{ \"productId\": 101, \"quantity\": 20 },\r\n{ \"productId\": 102, \"quantity\": 2 }\r\n],\r\n\"firstName\": \"Niklas\",\r\n\"lastName\": \"Osimhen\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -67,7 +67,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\"orderId\": 6001,\r\n\"items\": [\r\n{ \"productId\": 101, \"quantity\": 1 },\r\n{ \"productId\": 102, \"quantity\": 2 }\r\n],\r\n\"accountBalance\": 30.0\r\n}",
+                    "raw": "{\r\n\"orderId\": 1002,\r\n\"items\": [\r\n{ \"productId\": 101, \"quantity\": 1 },\r\n{ \"productId\": 102, \"quantity\": 2 }\r\n],\r\n\"firstName\": \"Maxi\",\r\n\"lastName\": \"Icardi\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

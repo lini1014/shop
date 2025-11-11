@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsNumber, Min, ValidateNested } from 'class-validator';
+import { IsArray, IsNumber, Min, ValidateNested, IsString, MinLength } from 'class-validator';
 import { ItemDto } from './ItemDTO';
 
 export class CreateOrderDto {
@@ -12,7 +12,11 @@ export class CreateOrderDto {
   @Type(() => ItemDto)
   items!: ItemDto[];
 
-  @IsNumber()
-  @Min(0)
-  accountBalance!: number;
+  @IsString()
+  @MinLength(1)
+  firstName!: string;
+
+  @IsString()
+  @MinLength(1)
+  lastName!: string;
 }

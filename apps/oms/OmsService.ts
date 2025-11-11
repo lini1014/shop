@@ -68,7 +68,7 @@ export class OmsService {
     this.orders.set(order.id, order);
 
     // 2) PAYMENT: CHARGE
-    const payRes = await this.paymentCharge(order.id, body.items, body.accountBalance);
+    const payRes = await this.paymentCharge(order.id, body.items, body.firstName, body.lastName);
     if (!payRes.ok) {
       // Kompensation: Reservierung freigeben
       await this.inventoryRelease(reservationId);
@@ -175,12 +175,13 @@ export class OmsService {
   private async paymentCharge(
     orderId: number,
     items: ItemDto[],
-    accountBalance: number,
+    firstName: string,
+    lastName: string,
   ): Promise<{ ok: boolean; transactionId?: string; totalAmount?: number; reason?: string }> {
     try {
       const { data } = await axios.post<PaymentAuthorizeRes>(
         `${this.paymentBaseUrl}/payments/authorize`,
-        { orderId, items, accountBalance },
+        { orderId, items, firstName, lastName },
       );
       this.logger.log(`Payment AUTHORIZE -> success=${data.success}`);
       return { ok: !!data.success };

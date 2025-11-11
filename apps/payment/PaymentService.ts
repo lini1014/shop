@@ -14,6 +14,14 @@ type Catalog = Record<number, number>;
 
 @Injectable()
 export class PaymentService {
+  // Demo-Kundenkonto-Datenbank: Vor- und Nachname -> Guthaben
+  private readonly customerBalances: Record<string, number> = {
+    'niklas osimhen': 200.0,
+    'maxi icardi': 4.2,
+    'david ederson': 200.0,
+    'emirhan aktürkoğlu': 200.0,
+  };
+
   private readonly catalog: Catalog = {
     101: 7.0,
     102: 60.0,
@@ -46,17 +54,25 @@ export class PaymentService {
    * Prüft, ob das Konto-Guthaben reicht und gibt das Ergebnis zurück.
    */
   authorize(create: CreateOrderDto): PaymentResult {
+    const normalize = (s: string) => s.trim().toLowerCase();
+    const fullKey = `${normalize(create.firstName)} ${normalize(create.lastName)}`;
+    const accountBalance = this.customerBalances[fullKey];
+
+    if (accountBalance === undefined) {
+      throw new BadRequestException(`UNKNOWN_CUSTOMER: ${create.firstName} ${create.lastName}`);
+    }
+
     const lineItems = this.priceItems(create.items);
     const totalAmount = lineItems.reduce((s, li) => s + li.lineTotal, 0);
     const total = +totalAmount.toFixed(2);
 
-    const success = create.accountBalance >= total;
+    const success = accountBalance >= total;
 
     const res: PaymentResult = {
       orderId: create.orderId,
       success,
       totalAmount: total,
-      accountBalance: create.accountBalance,
+      accountBalance,
       lineItems,
       reason: success ? undefined : 'INSUFFICIENT_FUNDS',
     };
