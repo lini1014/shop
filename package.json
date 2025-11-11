@@ -96,8 +96,7 @@
     "moduleNameMapper": {
       "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1"
     }
-  }
-  ,
+  },
   "overrides": {
     "glob": "9.3.5",
     "minimatch": "7.4.6"
