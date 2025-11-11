@@ -6,16 +6,16 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<RmqOptions>(LogModule, {
     transport: Transport.RMQ,
     options: {
-      urls: ['amqp://guest:guest@localhost:5672'],
+      urls: ['amqp://guest:guest@127.0.0.1:5672'],
       //* Hier wird der Kanal für den Log-Service definiert
       queue: 'log_queue',
       queueOptions: {
-        durable: true, // Die Warteschlange bleibt auch nach einem Neustart erhalten
+        durable: true, //
       },
     },
   });
   await app.listen();
-  console.log('Logging Microservice hört auf Nachrichten...');
+  console.log('Logging Microservice gestartet');
 }
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 bootstrap();

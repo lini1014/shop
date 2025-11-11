@@ -10,15 +10,24 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+     test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+     interval: 5s
+     timeout: 10s
+     retries: 5
+
+
 
    logservice:
-    build: ./apps/log     # Ordner mit logmain.ts / log-module.ts / log-service.ts
+    build: .  # Ordner mit logmain.ts / log-module.ts / log-service.ts
     command: node dist/apps/log/logmain.js
     environment:
       - AMQP_URL=amqp://guest:guest@rabbitmq:5672
-    depends_on: [ rabbitmq ]
+    depends_on: 
+        rabbitmq:
+            condition: service_healthy
     volumes:
-      - ./log:/usr/src/app/log  # schreibt central.log hierher
+      - ./libs/log/log-file:/usr/src/app/log
 
    #Payment   
    payment:
@@ -29,7 +38,8 @@ services:
       - PORT=3003
       - AMQP_URL=amqp://guest:guest@rabbitmq:5672
     depends_on:
-      - rabbitmq
+      rabbitmq:
+          condition: service_healthy
     ports:
       - "3003:3003"
     volumes:
@@ -39,3 +49,12 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
+
+   wms: 
+    build: .
+    command: node dist/apps/wms/wmsmain.js
+    environment:
+     - AMQP_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on: 
+        rabbitmq:
+            condition: service_healthy

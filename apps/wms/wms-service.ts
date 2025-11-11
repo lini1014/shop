@@ -25,10 +25,18 @@ export class WmsService implements OnModuleInit {
 
   async onModuleInit() {
     //* Verbindung zum RabbitMQ-Server aufbauen
-    await this.statusClient.connect();
-    await this.logClient.connect();
-    console.log('WMS Status Clients (Status und Log) verbunden');
+   try {
+      
+      await this.statusClient.connect();
+      await this.logClient.connect();
+      console.log('WMS Clients verbunden');
+      
+    } catch (error) {
+      console.error('FEHLER: WMS Clients konnten sich nicht verbinden', error);
+      this.log('error', 'WMS Clients konnten sich nicht mit RabbitMQ verbinden.');
+    }
   }
+  
   //* private Methode zum Loggen
   private log(level: 'info' | 'error' | 'warn', message: string) {
     //* Senden eine Nachricht an den Log-Service
@@ -46,8 +54,8 @@ export class WmsService implements OnModuleInit {
   @MessagePattern('order_received')
   async handleOrderReceived(@Payload() data: OrderPayload, @Ctx() context: RmqContext) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, prettier/prettier
-    const channel: Channel = context.getChannelRef();
-    const originalMsg: Message = context.getMessage();
+    const channel : Channel = context.getChannelRef();
+    const originalMsg : Message = context.getMessage();
 
     this.log('info', `[WMS] Bestellung erhalten: ${data.orderId}`);
 

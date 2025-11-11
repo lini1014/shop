@@ -4,13 +4,14 @@
  * 1) Inventory RESERVE → reservationId
  * 2) Payment CHARGE
  * 3) WMS anstoßen (hier: Statuswechsel)
- *    - Bei Payment-Fehler: Inventory RELEASE (Kompensation)
+ * - Bei Payment-Fehler: Inventory RELEASE (Kompensation)
  */
-import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Inject, OnModuleInit } from '@nestjs/common';
 import axios from 'axios';
 import { ItemDto } from '../../libs/dto/ItemDTO';
 import { OrderDto, OrderStatus } from '../../libs/dto/OrderDTO';
 import { CreateOrderRequestDto } from '../../libs/dto/CreateOrderRequestDto';
+import { ClientProxy } from '@nestjs/microservices';
 
 // ---- Antwort-Interfaces der Upstream-Services (statisch typisiert) ----
 interface InventoryReserveRes {
@@ -28,40 +29,55 @@ interface PaymentChargeRes {
 }
 
 @Injectable()
-export class OmsService {
-  private readonly logger = new Logger(OmsService.name);
+export class OmsService implements OnModuleInit {
+  constructor(
+    @Inject('LOG_CLIENT') private readonly logClient: ClientProxy,
+    @Inject('WMS_CLIENT') private readonly wmsClient: ClientProxy,
+  ) {}
 
-  // In-Memory Orders (Demo)
+  async onModuleInit() {
+    await this.logClient.connect();
+    await this.wmsClient.connect();
+    this.log('info', 'OMS Service verbunden mit Log-Service und WMS-Service');
+  }
+
+  private log(level: 'info' | 'error' | 'warn', message: string) {
+    this.logClient.emit('log_message', {
+      service: 'OMS',
+      level,
+      message,
+      timestamp: new Date().toISOString(),
+    });
+  } // In-Memory Orders (Demo)
   private orders = new Map<number, OrderDto>();
   private nextOrderId = 0;
 
   private generateOrderId(): number {
     return this.nextOrderId++;
-  }
+  } // Basis-URLs via ENV konfigurierbar
 
-  // Basis-URLs via ENV konfigurierbar
   private readonly inventoryBaseUrl = process.env.INVENTORY_URL ?? 'http://localhost:3001';
-  private readonly paymentBaseUrl = process.env.PAYMENT_URL ?? 'http://localhost:3002';
-
-  /**
+  private readonly paymentBaseUrl = process.env.PAYMENT_URL ?? 'http://localhost:3002'; /**
    * Hauptablauf: Reserve → Charge → Commit → WMS
    */
+
   async createOrderFromSelection(body: CreateOrderRequestDto): Promise<OrderDto> {
-    // 0) Order anlegen (ID intern generieren)
-    const newId = this.generateOrderId();
+    // 0) Order anlegen (ID aus Request oder intern generieren)
+    const newId = body.orderId ?? this.generateOrderId();
     const order: OrderDto = {
       id: newId,
       items: body.items,
       status: OrderStatus.RECEIVED,
     };
     this.orders.set(order.id, order);
+    this.log('info', `Bestellung ${newId} ERHALTEN.`); // 1) INVENTORY: RESERVE
 
-    // 1) INVENTORY: RESERVE
     const reserveRes = await this.inventoryReserve(order.id, body.items);
     if (!reserveRes.ok || !reserveRes.reservationId) {
       order.status = OrderStatus.CANCELLED;
       order.reason = 'OUT_OF_STOCK';
       this.orders.set(order.id, order);
+      this.log('warn', `Bestellung ${order.id} storniert. Grund: OUT_OF_STOCK.`);
       throw new HttpException(
         { message: 'Reservierung im Inventory fehlgeschlagen', reason: 'OUT_OF_STOCK' },
         HttpStatus.BAD_REQUEST,
@@ -69,20 +85,16 @@ export class OmsService {
     }
     const reservationId = reserveRes.reservationId;
     order.status = OrderStatus.RESERVED;
-    this.orders.set(order.id, order);
+    this.orders.set(order.id, order); // 2) PAYMENT: AUTHORIZE (Payment-Service erwartet firstName/lastName)
 
-    // 2) PAYMENT: CHARGE
-<<<<<<< HEAD
     const payRes = await this.paymentCharge(order.id, body.items, body.firstName, body.lastName);
-=======
-    const payRes = await this.paymentCharge(order.id, body.items, body.name);
->>>>>>> 78189d655a7dc34dd049d859bc89b30aaf0e7e2d
     if (!payRes.ok) {
       // Kompensation: Reservierung freigeben
       await this.inventoryRelease(reservationId);
       order.status = OrderStatus.CANCELLED;
       order.reason = payRes.reason ?? 'PAYMENT_FAILED';
       this.orders.set(order.id, order);
+      this.log('warn', `Bestellung ${order.id} storniert. Grund: ${order.reason}.`);
       throw new HttpException(
         { message: 'Zahlung im Payment-Service fehlgeschlagen', reason: order.reason },
         HttpStatus.BAD_REQUEST,
@@ -90,26 +102,37 @@ export class OmsService {
     }
     order.status = OrderStatus.PAID;
     this.orders.set(order.id, order);
+    this.log('info', `Bestellung ${order.id} erfolgreich bezahlt.`); // 3) WMS anstoßen (hier simuliert)
 
-    // 3) WMS anstoßen (hier simuliert)
     order.status = OrderStatus.FULFILLMENT_REQUESTED;
+
+    const wmsPayload = {
+      orderId: `ORD-${order.id}`,
+      items: order.items,
+      customer: {
+        firstName: body.firstName,
+        lastName: body.lastName,
+      },
+      // ... (evtl. mehr Daten aus dem PDF-Beispiel)
+    };
+    this.wmsClient.emit('order_received', wmsPayload);
+    this.log('info', `Bestellung ${order.id} an WMS (Queue: wms_queue) weitergeleitet.`);
+
     this.orders.set(order.id, order);
     return order;
-  }
+  } // Get methode: Order nach ID holen, 404 wenn nicht vorhanden
 
-  // Get methode: Order nach ID holen, 404 wenn nicht vorhanden
-  async getOrderById(id: number): Promise<OrderDto> {
+  getOrderById(id: number): OrderDto {
     const order = this.orders.get(id);
     if (!order) {
+      this.log('warn', `Versuch, nicht existierende Order ${id} abzurufen.`);
       throw new HttpException(
         { message: 'Order nicht gefunden', reason: 'NOT_FOUND' },
         HttpStatus.NOT_FOUND,
       );
     }
     return order;
-  }
-
-  // ---------------- Inventory Calls ----------------
+  } // ---------------- Inventory Calls ----------------
 
   private async inventoryReserve(
     orderId: number,
@@ -120,12 +143,14 @@ export class OmsService {
         `${this.inventoryBaseUrl}/inventory/reservations`,
         { orderId, items },
       );
-      this.logger.log(
+      this.log(
+        'info',
         `Inventory RESERVE -> ok=${data.ok} reservationId=${data.reservationId ?? '-'}`,
       );
       return { ok: data.ok, reservationId: data.reservationId };
     } catch (e) {
-      this.logger.error('Inventory RESERVE unreachable', e instanceof Error ? e.message : e);
+      const errorDetails = e instanceof Error ? e.message : String(e);
+      this.log('error', `Inventory RESERVE unreachable: ${errorDetails}`);
       throw new HttpException(
         { message: 'Inventory-Service nicht erreichbar' },
         HttpStatus.BAD_GATEWAY,
@@ -139,65 +164,45 @@ export class OmsService {
         `${this.inventoryBaseUrl}/inventory/reservations/release`,
         { reservationId },
       );
-      this.logger.warn(`Inventory RELEASE -> ok=${data.ok}`);
+      this.log('warn', `Inventory RELEASE (Kompensation) -> ok=${data.ok}`);
       return { ok: data.ok };
     } catch (e) {
       // Release-Fehler nicht eskalieren (Order bleibt ohnehin CANCELLED), nur loggen
-      this.logger.error('Inventory RELEASE unreachable', e instanceof Error ? e.message : e);
+      const errorDetails = e instanceof Error ? e.message : String(e);
+      this.log('error', `Inventory RELEASE unreachable: ${errorDetails}`);
       return { ok: false };
     }
-  }
-
-  // ---------------- Payment Call ----------------
+  } // ---------------- Payment Call ----------------
 
   private async paymentCharge(
     orderId: number,
     items: ItemDto[],
-<<<<<<< HEAD
     firstName: string,
     lastName: string,
   ): Promise<{ ok: boolean; transactionId?: string; totalAmount?: number; reason?: string }> {
     try {
-      const { data } = await axios.post<PaymentAuthorizeRes>(
-        `${this.paymentBaseUrl}/payments/authorize`,
-        { orderId, items, firstName, lastName },
-      );
-      this.logger.log(`Payment AUTHORIZE -> success=${data.success}`);
-      return { ok: !!data.success };
-    } catch (e: any) {
-      const status = e?.response?.status as number | undefined;
-      const respData = e?.response?.data;
-      if (status && status >= 400 && status < 500) {
-        // Fachlicher/Validierungs-Fehler vom Payment-Service → als ok:false zurückgeben
-        const reason = typeof respData?.message === 'string'
-          ? respData.message
-          : Array.isArray(respData?.message)
-            ? respData.message.join(', ')
-            : 'PAYMENT_BAD_REQUEST';
-        this.logger.warn(`Payment AUTHORIZE client error ${status}: ${reason}`);
-        return { ok: false, reason };
-      }
-
-      // Kein Response oder 5xx → als Infrastrukturproblem behandeln
-      this.logger.error('Payment AUTHORIZE unreachable', e instanceof Error ? e.message : e);
-=======
-    name: string,
-  ): Promise<{ ok: boolean; transactionId?: string; totalAmount?: number; reason?: string }> {
-    try {
-      const { data } = await axios.post<PaymentChargeRes>(`${this.paymentBaseUrl}/payments/`, {
+      const { data } = await axios.post<{
+        success: boolean;
+        transactionId?: string;
+        reason?: string;
+      }>(`${this.paymentBaseUrl}/payments/authorize`, {
         orderId,
         items,
-        name,
+        firstName,
+        lastName,
       });
-      this.logger.log(`Payment CHARGE -> ok=${data.ok} tx=${data.transactionId ?? '-'}`);
+      this.log(
+        'info',
+        `Payment AUTHORIZE -> success=${data.success} tx=${data.transactionId ?? '-'}`,
+      );
       return {
-        ok: data.ok,
-        transactionId: data.transactionId,
+        ok: data.success,
         reason: data.reason,
+        transactionId: data.transactionId,
       };
     } catch (e) {
-      this.logger.error('Payment CHARGE unreachable', e instanceof Error ? e.message : e);
->>>>>>> 78189d655a7dc34dd049d859bc89b30aaf0e7e2d
+      const errorDetails = e instanceof Error ? e.message : String(e);
+      this.log('error', `Payment CHARGE unreachable: ${errorDetails}`);
       throw new HttpException(
         { message: 'Payment-Service nicht erreichbar' },
         HttpStatus.BAD_GATEWAY,

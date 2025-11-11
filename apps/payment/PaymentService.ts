@@ -1,6 +1,8 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { ItemDto } from 'libs/dto/ItemDTO';
 import { CreateOrderDto } from 'libs/dto/CreateOrderDTO';
+import { Inject, OnModuleInit } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 export interface PaymentResult {
   orderId: number;
   success: boolean;
@@ -13,7 +15,23 @@ export interface PaymentResult {
 type Catalog = Record<number, number>;
 
 @Injectable()
-export class PaymentService {
+export class PaymentService implements OnModuleInit {
+  constructor(@Inject('LOG_CLIENT') private readonly logClient: ClientProxy) {}
+
+  async onModuleInit() {
+    await this.logClient.connect();
+    this.log('info', 'Payment Service verbunden mit Log-Service');
+  }
+
+  private log(level: 'info' | 'error' | 'warn', message: string) {
+    this.logClient.emit('log_message', {
+      service: 'PAYMENT', 
+      level,
+      message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+  
   // Demo-Kundenkonto-Datenbank: Vor- und Nachname -> Guthaben
   private readonly customerBalances: Record<string, number> = {
     'niklas osimhen': 200.0,
@@ -31,7 +49,8 @@ export class PaymentService {
   getPrice(productId: number): number {
     const price = this.catalog[productId];
     if (price === undefined) {
-      throw new BadRequestException(`Unknown productId ${productId}`);
+      this.log('error', `Unbekannte productId ${productId} im Katalog.`);
+    throw new BadRequestException(`Unknown productId ${productId}`);
     }
     return price;
   }
@@ -59,6 +78,7 @@ export class PaymentService {
     const accountBalance = this.customerBalances[fullKey];
 
     if (accountBalance === undefined) {
+      this.log('warn', `Kunde ${fullKey} nicht in der Datenbank gefunden.`)
       throw new BadRequestException(`UNKNOWN_CUSTOMER: ${create.firstName} ${create.lastName}`);
     }
 
@@ -76,6 +96,12 @@ export class PaymentService {
       lineItems,
       reason: success ? undefined : 'INSUFFICIENT_FUNDS',
     };
+    if(success){
+      this.log('info', `Zahlung für Order ${create.orderId} (Betrag: ${total}) ERFOLGREICH.`);
+     } else {
+      this.log('warn', `Zahlung für Order ${create.orderId} (Betrag: ${total}) ABGELEHNT. Grund: ${res.reason}`);
+     }
+   
     return res;
   }
 }

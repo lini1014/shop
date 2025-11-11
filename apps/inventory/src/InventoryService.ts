@@ -1,4 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { Inject, OnModuleInit } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 
 interface Reservation {
   id: string;
@@ -6,9 +8,22 @@ interface Reservation {
 }
 
 @Injectable()
-export class InventoryService {
-  private readonly logger = new Logger(InventoryService.name);
+export class InventoryService implements OnModuleInit {
+  constructor(@Inject('LOG_CLIENT') private readonly logClient: ClientProxy) {}
 
+  async onModuleInit() {
+    await this.logClient.connect();
+    this.log('info', 'Inventory Service verbunden mit Log-Service');
+  }
+
+  private log(level: 'info' | 'error' | 'warn', message: string) {
+    this.logClient.emit('log_message', {
+      service: 'INVENTORY', // <-- WICHTIG: Service-Namen anpassen!
+      level,
+      message,
+      timestamp: new Date().toISOString(),
+    });
+  }
   // Beispielhafte Lagerbestände
   private stock = new Map<string, number>([
     ['SKU-123', 20],
@@ -27,7 +42,7 @@ export class InventoryService {
     for (const item of items) {
       const current = this.stock.get(item.sku) ?? 0;
       if (current < item.qty) {
-        this.logger.warn(`Nicht genug Bestand für ${item.sku}: ${current} < ${item.qty}`);
+        this.log('warn', `Nicht genug Bestand für ${item.sku}: ${current} < ${item.qty}`);
         return null;
       }
     }
@@ -40,7 +55,7 @@ export class InventoryService {
     }
 
     this.reservations.set(reservationId, { id: reservationId, items });
-    this.logger.log(`Reservierung erfolgreich: ${reservationId}`);
+    this.log('info', `Reservierung erfolgreich: ${reservationId}`);
     return reservationId;
   }
 
@@ -48,15 +63,15 @@ export class InventoryService {
    * Verbindlich abbuchen (Commit)
    */
   commitReservation(reservationId: string): boolean {
-    this.logger.log(`CommitReservation: ${reservationId}`);
+    this.log('info', `CommitReservation: ${reservationId}`);
     if (!this.reservations.has(reservationId)) {
-      this.logger.warn(`Commit fehlgeschlagen – Reservierung nicht gefunden: ${reservationId}`);
+      this.log('warn', `Commit fehlgeschlagen – Reservierung nicht gefunden: ${reservationId}`);
       return false;
     }
 
     // In einem echten System würde man hier in der DB den Status setzen.
     this.reservations.delete(reservationId);
-    this.logger.log(`Reservierung ${reservationId} erfolgreich committed`);
+    this.log('info', `Reservierung ${reservationId} erfolgreich committed`);
     return true;
   }
 
@@ -64,11 +79,11 @@ export class InventoryService {
    * Reservierung wieder freigeben (Rollback)
    */
   releaseReservation(reservationId: string): boolean {
-    this.logger.log(`ReleaseReservation: ${reservationId}`);
+    this.log('info', `ReleaseReservation: ${reservationId}`);
     const reservation = this.reservations.get(reservationId);
 
     if (!reservation) {
-      this.logger.warn(`Keine Reservierung mit ID ${reservationId} gefunden`);
+      this.log('warn', `Keine Reservierung mit ID ${reservationId} gefunden`);
       return false;
     }
 
@@ -79,7 +94,7 @@ export class InventoryService {
     }
 
     this.reservations.delete(reservationId);
-    this.logger.log(`Reservierung ${reservationId} freigegeben`);
+    this.log('info', `Reservierung ${reservationId} freigegeben`);
     return true;
   }
 
