@@ -12,7 +12,7 @@ export class OmsController {
   @Post()
   async create(@Body() body: CreateOrderRequestDto) {
     this.logger.log(
-      `Forwarding order to service: name=${body.name}, items=${body.items?.length ?? 0}`,
+      `Forwarding order to service: firstName=${body.firstName}, lastName=${body.lastName}, items=${body.items?.length ?? 0}`,
     );
     const order = await this.omsService.createOrderFromSelection(body);
     return { orderId: order.id, status: order.status };

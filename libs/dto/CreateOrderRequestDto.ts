@@ -4,7 +4,10 @@ import { ItemDto } from './ItemDTO';
 
 export class CreateOrderRequestDto {
   @IsString()
-  name!: string;
+  firstName!: string;
+
+  @IsString()
+  lastName!: string;
 
   @IsArray()
   @ValidateNested({ each: true })

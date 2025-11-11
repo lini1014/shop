@@ -72,11 +72,7 @@ export class OmsService {
     this.orders.set(order.id, order);
 
     // 2) PAYMENT: CHARGE
-<<<<<<< HEAD
     const payRes = await this.paymentCharge(order.id, body.items, body.firstName, body.lastName);
-=======
-    const payRes = await this.paymentCharge(order.id, body.items, body.name);
->>>>>>> 78189d655a7dc34dd049d859bc89b30aaf0e7e2d
     if (!payRes.ok) {
       // Kompensation: Reservierung freigeben
       await this.inventoryRelease(reservationId);
@@ -98,7 +94,7 @@ export class OmsService {
   }
 
   // Get methode: Order nach ID holen, 404 wenn nicht vorhanden
-  async getOrderById(id: number): Promise<OrderDto> {
+  getOrderById(id: number): OrderDto {
     const order = this.orders.get(id);
     if (!order) {
       throw new HttpException(
@@ -153,41 +149,15 @@ export class OmsService {
   private async paymentCharge(
     orderId: number,
     items: ItemDto[],
-<<<<<<< HEAD
     firstName: string,
     lastName: string,
-  ): Promise<{ ok: boolean; transactionId?: string; totalAmount?: number; reason?: string }> {
-    try {
-      const { data } = await axios.post<PaymentAuthorizeRes>(
-        `${this.paymentBaseUrl}/payments/authorize`,
-        { orderId, items, firstName, lastName },
-      );
-      this.logger.log(`Payment AUTHORIZE -> success=${data.success}`);
-      return { ok: !!data.success };
-    } catch (e: any) {
-      const status = e?.response?.status as number | undefined;
-      const respData = e?.response?.data;
-      if (status && status >= 400 && status < 500) {
-        // Fachlicher/Validierungs-Fehler vom Payment-Service → als ok:false zurückgeben
-        const reason = typeof respData?.message === 'string'
-          ? respData.message
-          : Array.isArray(respData?.message)
-            ? respData.message.join(', ')
-            : 'PAYMENT_BAD_REQUEST';
-        this.logger.warn(`Payment AUTHORIZE client error ${status}: ${reason}`);
-        return { ok: false, reason };
-      }
-
-      // Kein Response oder 5xx → als Infrastrukturproblem behandeln
-      this.logger.error('Payment AUTHORIZE unreachable', e instanceof Error ? e.message : e);
-=======
-    name: string,
   ): Promise<{ ok: boolean; transactionId?: string; totalAmount?: number; reason?: string }> {
     try {
       const { data } = await axios.post<PaymentChargeRes>(`${this.paymentBaseUrl}/payments/`, {
         orderId,
         items,
-        name,
+        firstName,
+        lastName,
       });
       this.logger.log(`Payment CHARGE -> ok=${data.ok} tx=${data.transactionId ?? '-'}`);
       return {
@@ -197,7 +167,6 @@ export class OmsService {
       };
     } catch (e) {
       this.logger.error('Payment CHARGE unreachable', e instanceof Error ? e.message : e);
->>>>>>> 78189d655a7dc34dd049d859bc89b30aaf0e7e2d
       throw new HttpException(
         { message: 'Payment-Service nicht erreichbar' },
         HttpStatus.BAD_GATEWAY,
