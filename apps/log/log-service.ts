@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Channel, Message } from 'amqplib';
 
+//*Definition einer Log-Nachricht
 interface LogPayload {
   service: string; // Name des Dienstes, der die Log-Nachricht sendet
   level: 'info' | 'warn' | 'error';
@@ -17,15 +18,15 @@ interface LogPayload {
 
 @Controller()
 export class LogService {
-  private logFilePath: string;
+  private logFilePath: string; //* Pfad zur Datei, in die geschrieben wird
 
   constructor() {
-
+  //* Definiert den Pfad: <aktuelles_verzeichnis>/log/log-file
   const logDir = path.join(process.cwd(), 'log');
   this.logFilePath = path.join(logDir, 'log-file');
 
   console.log(`Log-Datei Pfad: ${this.logFilePath}`);
-
+//*Sicherstellung, dass der Ordner /log existiert
   if(!fs.existsSync(logDir)){
    console.log(`Erstelle Log-Verzeichnis: ${logDir}`);
    fs.mkdirSync(logDir);
@@ -37,26 +38,28 @@ export class LogService {
     console.error('Konnte Log-Datei nicht initial schreiben', error);
   }
  }
+//*Reagiert auf Nachrichten mit dem 'log_message' Pattern 
 @EventPattern('log_message')
 async handleLog(@Payload() data: LogPayload, @Ctx() context: RmqContext) {
   const channel : Channel = context.getChannelRef();
   const originalMsg : Message = context.getMessage();
-
+  //*Formatierung des Log-Eintrags
   const logEntry = `${data.timestamp} [${data.service}] [${data.level.toUpperCase()}]: ${data.message}\n`;
  
   try {
-
+    //* Log-Eintrag wird asynchron in die Datei angehangen
     await fs.promises.appendFile(this.logFilePath, logEntry);
 
-    // Separator am Ende eines Prozesses (heuristisch):
-    // - Erfolg: WMS meldet "abgeschlossen"
-    // - Fehler/Abbruch: OMS meldet "storniert" oder "fehlgeschlagen"
+    /** Separator am Ende eines Prozesses (heuristisch):
+     * - Erfolg: WMS meldet "abgeschlossen"
+      - Fehler/Abbruch: OMS meldet "storniert" oder "fehlgeschlagen" */
     const isTerminal =
       (data.service === 'WMS' && /abgeschlossen/i.test(data.message)) ||
       (data.service === 'OMS' && (/storniert/i.test(data.message) || /fehlgeschlagen/i.test(data.message)));
-
+ 
+    //* Trennlinie für bessere Lesbarkeit
     if (isTerminal) {
-      await fs.promises.appendFile(this.logFilePath, '--------------------\n');
+      await fs.promises.appendFile(this.logFilePath, '--------------------------------------------------------------------\n');
     }
 
     channel.ack(originalMsg);

@@ -3,6 +3,7 @@ import { OmsController } from './OmsController';
 import { OmsService } from './OmsService';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
+// Bündelt Controller, Service und Messaging-Clients des OMS.
 @Module({
   imports: [
     ClientsModule.register([
@@ -30,7 +31,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       },
     ]),
   ],
-  controllers: [OmsController], // deine Endpunkte (happy / oos / payfail)
-  providers: [OmsService], // Orchestrierung IS -> PS -> WMS
+  controllers: [OmsController],
+  providers: [OmsService],
 })
 export class AppModule {}

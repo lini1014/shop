@@ -1,4 +1,3 @@
-// apps/oms/OmsService.ts
 /**
  * OMS-Orchestrierung:
  * 1) Inventory RESERVE → reservationId
@@ -60,14 +59,12 @@ export class OmsService implements OnModuleInit {
     });
   } // In-Memory Orders (Demo)
   private orders = new Map<number, OrderDto>();
-  private nextOrderId = 0;
+  private nextOrderId = 1000;
 
   private generateOrderId(): number {
     return this.nextOrderId++;
-  } // Basis-URLs via ENV konfigurierbar
+  }
 
-  private readonly inventoryBaseUrl = process.env.INVENTORY_URL ?? 'http://localhost:3001';
-  private readonly paymentBaseUrl = process.env.PAYMENT_URL ?? 'http://localhost:3002';
   /**
    * Hauptablauf: Reserve → Charge → Commit → WMS
    */
@@ -81,8 +78,9 @@ export class OmsService implements OnModuleInit {
       status: OrderStatus.RECEIVED,
     };
     this.orders.set(order.id, order);
-    this.log('info', `Bestellung ${newId} ERHALTEN.`); // 1) INVENTORY: RESERVE
+    this.log('info', `Bestellung ${newId} ERHALTEN.`);
 
+    // 1) INVENTORY: RESERVE
     const reserveRes = await this.inventoryReserve(order.id, body.items);
     if (!reserveRes.ok || !reserveRes.reservationId) {
       order.status = OrderStatus.CANCELLED;
@@ -99,7 +97,6 @@ export class OmsService implements OnModuleInit {
     this.orders.set(order.id, order);
 
     // 2) PAYMENT: AUTHORIZE (Payment-Service erwartet firstName/lastName)
-
     const payRes = await this.paymentCharge(order.id, body.items, body.firstName, body.lastName);
     if (!payRes.ok) {
       // Kompensation: Reservierung freigeben
@@ -113,12 +110,13 @@ export class OmsService implements OnModuleInit {
         HttpStatus.BAD_REQUEST,
       );
     }
+
     order.status = OrderStatus.PAID;
     this.orders.set(order.id, order);
-    this.log('info', `Bestellung ${order.id} erfolgreich bezahlt.`); // 3) WMS anstoßen (hier simuliert)
+    this.log('info', `Bestellung ${order.id} erfolgreich bezahlt.`);
 
+    // 3) WMS anstoßen (hier simuliert)
     order.status = OrderStatus.FULFILLMENT_REQUESTED;
-
     const wmsPayload = {
       orderId: `ORD-${order.id}`,
       items: order.items,
@@ -126,7 +124,6 @@ export class OmsService implements OnModuleInit {
         firstName: body.firstName,
         lastName: body.lastName,
       },
-      // ... (evtl. mehr Daten aus dem PDF-Beispiel)
     };
     this.wmsClient.emit('order_received', wmsPayload);
     this.log('info', `Bestellung ${order.id} an WMS (Queue: wms_queue) weitergeleitet.`);
@@ -136,7 +133,6 @@ export class OmsService implements OnModuleInit {
   }
 
   // Get methode: Order nach ID holen, 404 wenn nicht vorhanden
-
   getOrderById(id: number): OrderDto {
     const order = this.orders.get(id);
     if (!order) {
@@ -147,15 +143,16 @@ export class OmsService implements OnModuleInit {
       );
     }
     return order;
-  } // ---------------- Inventory Calls ----------------
+  }
 
+  // ---------------- Inventory Calls ----------------
   private async inventoryReserve(
     orderId: number,
     items: ItemDto[],
   ): Promise<{ ok: boolean; reservationId?: string }> {
     try {
       const { data } = await axios.post<InventoryReserveRes>(
-        `${this.inventoryBaseUrl}/inventory/reservations`,
+        `http://localhost:3001/inventory/reservations`,
         { orderId, items },
       );
       this.log(
@@ -176,7 +173,7 @@ export class OmsService implements OnModuleInit {
   private async inventoryRelease(reservationId: string): Promise<{ ok: boolean }> {
     try {
       const { data } = await axios.post<InventoryReleaseRes>(
-        `${this.inventoryBaseUrl}/inventory/reservations/release`,
+        `http://localhost:3001/inventory/reservations/release`,
         { reservationId },
       );
       this.log('warn', `Inventory RELEASE (Kompensation) -> ok=${data.ok}`);
@@ -187,8 +184,9 @@ export class OmsService implements OnModuleInit {
       this.log('error', `Inventory RELEASE unreachable: ${errorDetails}`);
       return { ok: false };
     }
-  } // ---------------- Payment Call ----------------
+  }
 
+  // ---------------- Payment Call ----------------
   private async paymentCharge(
     orderId: number,
     items: ItemDto[],
@@ -199,7 +197,7 @@ export class OmsService implements OnModuleInit {
       const { data } = await axios.post<{
         success: boolean;
         reason?: string;
-      }>(`${this.paymentBaseUrl}/payments/authorize`, {
+      }>(`http://localhost:3002/payments/authorize`, {
         orderId,
         items,
         firstName,
