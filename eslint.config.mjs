@@ -34,9 +34,8 @@ export default tseslint.config(
     },
   },
 
-  // 🧩 Zusatz: DTOs von strengen "unsafe"-Regeln befreien
   {
-    files: ['**/dto/**/*.ts'], // greift nur auf deine DTO-Klassen
+    files: ['**/dto/**/*.ts'],
     rules: {
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
