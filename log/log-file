@@ -381,3 +381,34 @@
 2025-11-12T20:18:29.399Z [WMS] [INFO]: Bestellung ORD-1 versandt
 2025-11-12T20:18:29.399Z [WMS] [INFO]: Bestellung ORD-1 abgeschlossen.
 --------------------
+--- Log-Service gestartet ---
+2025-11-12T20:47:02.566Z [WMS] [INFO]: WMS verbunden mit Log-Service
+2025-11-12T20:47:02.745Z [INVENTORY] [INFO]: Inventory Service verbunden mit Log-Service
+2025-11-12T20:47:03.335Z [OMS] [INFO]: OMS Service verbunden mit Log-Service und WMS-Service
+2025-11-12T20:47:03.607Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
+2025-11-12T20:47:07.706Z [OMS] [INFO]: Bestellung 1000 ERHALTEN.
+2025-11-12T20:47:07.741Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762980427741
+2025-11-12T20:47:07.747Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762980427741
+2025-11-12T20:47:07.776Z [PAYMENT] [INFO]: Zahlung für Order 1000 (Betrag: 74) ERFOLGREICH.
+2025-11-12T20:47:07.779Z [OMS] [INFO]: Payment AUTHORIZE -> success=true reason=- 
+2025-11-12T20:47:07.779Z [OMS] [INFO]: Bestellung 1000 erfolgreich bezahlt.
+2025-11-12T20:47:07.779Z [OMS] [INFO]: Bestellung 1000 an WMS (Queue: wms_queue) weitergeleitet.
+2025-11-12T20:47:07.785Z [WMS] [INFO]: Bestellung erhalten: ORD-1000
+2025-11-12T20:47:09.800Z [WMS] [INFO]: Artikel für Bestellung ORD-1000 ausgewählt.
+2025-11-12T20:47:11.801Z [WMS] [INFO]: Bestellung ORD-1000 verpackt.
+2025-11-12T20:47:12.817Z [WMS] [INFO]: Bestellung ORD-1000 versandt
+2025-11-12T20:47:12.817Z [WMS] [INFO]: Bestellung ORD-1000 abgeschlossen.
+--------------------------------------------------------------------
+2025-11-12T20:47:23.521Z [OMS] [INFO]: Bestellung 1001 ERHALTEN.
+2025-11-12T20:47:23.525Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762980443525
+2025-11-12T20:47:23.527Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762980443525
+2025-11-12T20:47:23.533Z [PAYMENT] [INFO]: Zahlung für Order 1001 (Betrag: 74) ERFOLGREICH.
+2025-11-12T20:47:23.535Z [OMS] [INFO]: Payment AUTHORIZE -> success=true reason=- 
+2025-11-12T20:47:23.535Z [OMS] [INFO]: Bestellung 1001 an WMS (Queue: wms_queue) weitergeleitet.
+2025-11-12T20:47:23.535Z [OMS] [INFO]: Bestellung 1001 erfolgreich bezahlt.
+2025-11-12T20:47:23.539Z [WMS] [INFO]: Bestellung erhalten: ORD-1001
+2025-11-12T20:47:25.552Z [WMS] [INFO]: Artikel für Bestellung ORD-1001 ausgewählt.
+2025-11-12T20:47:27.563Z [WMS] [INFO]: Bestellung ORD-1001 verpackt.
+2025-11-12T20:47:28.575Z [WMS] [INFO]: Bestellung ORD-1001 abgeschlossen.
+2025-11-12T20:47:28.575Z [WMS] [INFO]: Bestellung ORD-1001 versandt
+--------------------------------------------------------------------
