@@ -44,3 +44,46 @@
 2025-11-12T15:07:01.199Z [WMS] [INFO]: [WMS] Bestellung ORD-2 abgeschlossen.
 2025-11-12T15:07:01.199Z [WMS] [INFO]: [WMS] Bestellung ORD-2 versandt
 --------------------
+--- Log-Service gestartet ---
+2025-11-12T15:11:26.216Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
+2025-11-12T15:11:26.394Z [OMS] [INFO]: OMS Service verbunden mit Log-Service und WMS-Service
+2025-11-12T15:11:39.627Z [OMS] [INFO]: Bestellung 0 ERHALTEN.
+2025-11-12T15:11:39.728Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762960299711
+2025-11-12T15:11:39.836Z [OMS] [ERROR]: Payment CHARGE unreachable: Request failed with status code 400
+2025-11-12T15:11:45.212Z [OMS] [INFO]: Bestellung 1 ERHALTEN.
+2025-11-12T15:11:45.223Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762960305220
+2025-11-12T15:11:45.238Z [PAYMENT] [INFO]: Zahlung für Order 1 (Betrag: 74) ERFOLGREICH.
+2025-11-12T15:11:45.241Z [OMS] [INFO]: Payment AUTHORIZE -> success=true reason=- 
+2025-11-12T15:11:45.242Z [OMS] [INFO]: Bestellung 1 an WMS (Queue: wms_queue) weitergeleitet.
+2025-11-12T15:11:45.242Z [OMS] [INFO]: Bestellung 1 erfolgreich bezahlt.
+2025-11-12T15:11:45.258Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-1
+2025-11-12T15:11:47.269Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-1 ausgewählt.
+2025-11-12T15:11:47.269Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-1
+2025-11-12T15:11:49.280Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung verpackt für Bestellung ORD-1
+2025-11-12T15:11:49.280Z [WMS] [INFO]: [WMS] Bestellung ORD-1 verpackt.
+2025-11-12T15:11:50.164Z [OMS] [INFO]: Bestellung 2 ERHALTEN.
+2025-11-12T15:11:50.181Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762960310176
+2025-11-12T15:11:50.193Z [PAYMENT] [INFO]: Zahlung für Order 2 (Betrag: 124.24) ERFOLGREICH.
+2025-11-12T15:11:50.199Z [OMS] [INFO]: Payment AUTHORIZE -> success=true reason=- 
+2025-11-12T15:11:50.199Z [OMS] [INFO]: Bestellung 2 an WMS (Queue: wms_queue) weitergeleitet.
+2025-11-12T15:11:50.199Z [OMS] [INFO]: Bestellung 2 erfolgreich bezahlt.
+2025-11-12T15:11:50.209Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-2
+2025-11-12T15:11:50.291Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung versandt für Bestellung ORD-1
+2025-11-12T15:11:50.291Z [WMS] [INFO]: [WMS] Bestellung ORD-1 abgeschlossen.
+2025-11-12T15:11:50.291Z [WMS] [INFO]: [WMS] Bestellung ORD-1 versandt
+--------------------
+2025-11-12T15:11:52.211Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-2
+2025-11-12T15:11:52.211Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-2 ausgewählt.
+2025-11-12T15:11:54.225Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung verpackt für Bestellung ORD-2
+2025-11-12T15:11:54.226Z [WMS] [INFO]: [WMS] Bestellung ORD-2 verpackt.
+2025-11-12T15:11:54.463Z [OMS] [INFO]: Bestellung 3 ERHALTEN.
+2025-11-12T15:11:54.478Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762960314473
+2025-11-12T15:11:54.491Z [PAYMENT] [WARN]: Zahlung für Order 3 (Betrag: 36.31) ABGELEHNT. Grund: INSUFFICIENT_FUNDS
+2025-11-12T15:11:54.494Z [OMS] [INFO]: Payment AUTHORIZE -> success=false reason=- 
+2025-11-12T15:11:54.505Z [OMS] [WARN]: Inventory RELEASE (Kompensation) -> ok=true
+2025-11-12T15:11:54.505Z [OMS] [WARN]: Bestellung 3 storniert. Grund: PAYMENT_FAILED.
+--------------------
+2025-11-12T15:11:55.231Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung versandt für Bestellung ORD-2
+2025-11-12T15:11:55.231Z [WMS] [INFO]: [WMS] Bestellung ORD-2 abgeschlossen.
+2025-11-12T15:11:55.231Z [WMS] [INFO]: [WMS] Bestellung ORD-2 versandt
+--------------------
