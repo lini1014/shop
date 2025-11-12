@@ -1,0 +1,45 @@
+import { Controller, Post, Body, Logger } from '@nestjs/common';
+import { InventoryService } from './InventoryService';
+
+@Controller('inventory')
+export class InventoryController {
+  private readonly logger = new Logger(InventoryController.name);
+
+  constructor(private readonly service: InventoryService) {}
+
+  /**
+   * POST /inventory/reservations
+   * Reserviert Bestand für eine Bestellung (Step 1 in OMS)
+   */
+  @Post('reservations')
+  async reserveStock(@Body() body: { orderId: number; items: { sku: string; qty: number }[] }) {
+    this.logger.log(`Reservierung für Order ${body.orderId}`);
+    const reservationId = await this.service.reserveStock(body.items);
+    if (!reservationId) {
+      return { ok: false, reason: 'OUT_OF_STOCK' };
+    }
+    return { ok: true, reservationId };
+  }
+
+  /**
+   * POST /inventory/reservations/commit
+   * Verbindlich abbuchen (Step 3 in OMS)
+   */
+  @Post('reservations/commit')
+  async commitReservation(@Body() body: { reservationId: string }) {
+    this.logger.log(`Commit Reservation ${body.reservationId}`);
+    const ok = await this.service.commitReservation(body.reservationId);
+    return { ok };
+  }
+
+  /**
+   * POST /inventory/reservations/release
+   * Reservierung wieder freigeben (bei Payment-Fehler)
+   */
+  @Post('reservations/release')
+  async releaseReservation(@Body() body: { reservationId: string }) {
+    this.logger.warn(`Release Reservation ${body.reservationId}`);
+    const ok = await this.service.releaseReservation(body.reservationId);
+    return { ok };
+  }
+}

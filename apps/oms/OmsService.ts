@@ -6,7 +6,14 @@
  * 3) WMS anstoßen (hier: Statuswechsel)
  * - Bei Payment-Fehler: Inventory RELEASE (Kompensation)
  */
-import { Injectable, HttpException, HttpStatus, Inject, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  Inject,
+  OnModuleInit,
+  ConflictException,
+} from '@nestjs/common';
 import axios from 'axios';
 import { ItemDto } from '../../libs/dto/ItemDTO';
 import { OrderDto, OrderStatus } from '../../libs/dto/OrderDTO';
@@ -29,18 +36,22 @@ interface PaymentCharge {
 
 @Injectable()
 export class OmsService implements OnModuleInit {
+  //*Client für den Log-Service wird injiziert
   constructor(
     @Inject('LOG_CLIENT') private readonly logClient: ClientProxy,
     @Inject('WMS_CLIENT') private readonly wmsClient: ClientProxy,
   ) {}
 
   async onModuleInit() {
+    //* Verbindung zur RabbitMQ-Queue für das Logging aufbauen
     await this.logClient.connect();
+    //*Hier ebenso Aufbauen der Verbindung zum WMS'
     await this.wmsClient.connect();
     this.log('info', 'OMS Service verbunden mit Log-Service und WMS-Service');
   }
-
+  //*Private Helfermethode für das Logging
   private log(level: 'info' | 'error' | 'warn', message: string) {
+    //*Sendet die Log-Nachricht asynchron an die 'log_queue'
     this.logClient.emit('log_message', {
       service: 'OMS',
       level,
@@ -76,10 +87,10 @@ export class OmsService implements OnModuleInit {
       order.reason = 'OUT_OF_STOCK';
       this.orders.set(order.id, order);
       this.log('warn', `Bestellung ${order.id} storniert. Grund: OUT_OF_STOCK.`);
-      throw new HttpException(
-        { message: 'Reservierung im Inventory fehlgeschlagen', reason: 'OUT_OF_STOCK' },
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new ConflictException({
+        message: 'Reservierung im Inventory fehlgeschlagen',
+        reason: 'OUT_OF_STOCK',
+      });
     }
     const reservationId = reserveRes.reservationId;
     order.status = OrderStatus.RESERVED;

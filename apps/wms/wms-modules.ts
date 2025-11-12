@@ -1,19 +1,5 @@
 /* eslint-disable prettier/prettier */
-// In NestJS ist ein Modul (immer mit @Module() markiert) so etwas wie ein „Container“,
-//der alle Teile dieses einen Services bündelt.
 
-//Beim WMS besteht dein Service z. B. aus:
-
-//einer Klasse, die auf RabbitMQ-Nachrichten reagiert (→ WmsSimService)
-
-//eventuell weiteren Helper-Services
-
-//evtl. Logger, Config usw.
-
-//Das Modul sagt also Nest:
-
-//"Wenn ich starte, hier sind meine Provider (z. B. Services),
-//und so ist mein Service zusammengesetzt."
 
 import { Module } from '@nestjs/common';
 import { WmsService } from './wms-service';
@@ -21,15 +7,18 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
-    //*Das Modul stellt Sender (also: den Client) bereit
+    /** Wir importieren hier das ClientsModule, damit das WMS Nachrichten
+     * an andere Services senden kann */ 
+    
     ClientsModule.register([
       {
-        name: 'WMS_STATUS_CLIENT', //*Ein Name, mit der ein Service geholt wird
+        //* 1. Sender: Für Status-Updates (an das OMS)
+        name: 'WMS_STATUS_CLIENT', 
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672'],
-          /**Der "Funkkanal", auf dem der Status gesendet wird
-           *Logging muss hier zuhören*/
+         /**Das ist die Ziel-Queue, an die dieser Client sendet
+          * Ein anderer Service muss auf diese Queue hören */
+          urls: [process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672'], 
           queue: 'status_updates_queue',
           queueOptions: {
             durable: false,
@@ -37,6 +26,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         },
       },
           { 
+            //* 2. Sender: Für Log-Nachrichten (an den Log Service)
             name: 'LOG_CLIENT', //* Implementieren des LogClients
           transport: Transport.RMQ,
           options: {
@@ -49,7 +39,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         },
     ]),
   ],
-  providers: [] /** Service, der die Logik enthält */,
+  providers: [], 
   controllers: [WmsService],
-}) /** Da wir nicht auf HTTP Anfragen reagieren, brauchen wir auch keinen Controller  */
+}) 
 export class WmsModule {}
