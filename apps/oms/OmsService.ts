@@ -78,8 +78,9 @@ export class OmsService implements OnModuleInit {
       status: OrderStatus.RECEIVED,
     };
     this.orders.set(order.id, order);
-    this.log('info', `Bestellung ${newId} ERHALTEN.`); // 1) INVENTORY: RESERVE
+    this.log('info', `Bestellung ${newId} ERHALTEN.`);
 
+    // 1) INVENTORY: RESERVE
     const reserveRes = await this.inventoryReserve(order.id, body.items);
     if (!reserveRes.ok || !reserveRes.reservationId) {
       order.status = OrderStatus.CANCELLED;
@@ -109,12 +110,13 @@ export class OmsService implements OnModuleInit {
         HttpStatus.BAD_REQUEST,
       );
     }
+
     order.status = OrderStatus.PAID;
     this.orders.set(order.id, order);
-    this.log('info', `Bestellung ${order.id} erfolgreich bezahlt.`); // 3) WMS anstoßen (hier simuliert)
+    this.log('info', `Bestellung ${order.id} erfolgreich bezahlt.`);
 
+    // 3) WMS anstoßen (hier simuliert)
     order.status = OrderStatus.FULFILLMENT_REQUESTED;
-
     const wmsPayload = {
       orderId: `ORD-${order.id}`,
       items: order.items,
