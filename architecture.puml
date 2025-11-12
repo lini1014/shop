@@ -1,0 +1,67 @@
+@startuml
+title Shop – Integrationsarchitektur 
+
+skinparam componentStyle rectangle
+skinparam wrapWidth 200
+skinparam maxMessageSize 200
+
+actor "Kunde" as Kunde
+
+package "Shop" {
+  [Order Management System (OMS)\nREST API + Orchestrierung] as OMS
+  [Inventory Service (IS)\ngRPC] as IS
+  [Payment Service (PS)\nREST API (extern)] as PS
+  [Warehouse Management System (WMS)\nMessage Queues / RabbitMQ] as WMS
+  queue "RabbitMQ" as MQ
+  database "Logfile\n(order.log)" as LOG
+}
+
+' --- Notizen zu den Komponenten (wie im Bild) ---
+note right of OMS
+OMS:
+- nimmt Bestellungen an
+- steuert den gesamten Prozess
+- schreibt Logs
+end note
+
+note bottom of IS
+IS:
+- prüft Lagerbestand
+- reserviert Artikel
+end note
+
+note bottom of PS
+PS:
+- führt Zahlung durch
+- liefert Zahlungsstatus zurück
+end note
+
+note bottom of WMS
+WMS:
+- erhält Fulfillment-Aufträge
+- sendet Statusmeldungen
+end note
+
+' --- Prozessfluss (1) bis (8) ---
+Kunde --> OMS : (1) Bestellung anlegen\nHTTP POST /orders
+OMS --> IS    : (2) Verfügbarkeit prüfen\nInventoryReserve
+IS  --> OMS   : (3) Ergebnis: verfügbar / nicht verfügbar
+OMS --> IS    : (4) Artikel reservieren\nInventoryReserve()
+OMS --> PS    : (5) Zahlung ausführen\nPOST /payments
+PS  --> OMS   : (6) Zahlungsstatus\nSUCCESS / FAILED
+OMS --> MQ    : (7) Nachricht senden\n(Auftrag starten)
+MQ  --> WMS   : Zustellung Auftrag \nCreateFulfillment
+WMS --> MQ    : Statusmeldungen\n(order_status)
+MQ  --> OMS   : (8) Statusmeldungen\n(order_status)
+
+' --- Logging NACH JEDEM SCHRITT ---
+OMS ..> LOG : (1) Bestellung geloggt
+OMS ..> LOG : (2) Availability-Check geloggt
+IS  ..> LOG : (3) Ergebnis geloggt
+OMS ..> LOG : (4) Reservierung geloggt
+OMS ..> LOG : (5) Zahlung initiiert geloggt
+PS  ..> LOG : (6) Zahlungsstatus geloggt
+OMS ..> LOG : (7) WMS-Auftrag gesendet geloggt
+WMS ..> LOG : (8) Statusmeldung geloggt
+
+@enduml
