@@ -56,7 +56,7 @@ export class WmsService implements OnModuleInit {
   async handleOrderReceived(@Payload() data: OrderPayload, @Ctx() context: RmqContext) {
     
     
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, prettier/prettier
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const channel : Channel = context.getChannelRef();
     const originalMsg : Message = context.getMessage();
 
