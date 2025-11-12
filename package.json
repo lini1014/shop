@@ -11,7 +11,7 @@
     "start:dev:oms": "nodemon --watch apps/oms -e ts --exec \"ts-node -r tsconfig-paths/register apps/oms/OmsMain.ts\"",
     "start:dev:wms": "nodemon --watch apps/wms -e ts --exec \"ts-node -r tsconfig-paths/register apps/wms/wmsmain.ts\"",
     "start:dev:log": "nodemon --watch apps/log -e ts --exec \"ts-node -r tsconfig-paths/register apps/log/logmain.ts\"",
-    "start:dev:all": "concurrently -n inv,pay,oms,wms \\\"npm:start:dev:log\\\" \\\"npm:start:dev:inventory\\\" \\\"npm:start:dev:payment\\\" \\\"npm:start:dev:oms\\\" \\\"npm:start:dev:wms\\\"",
+    "start:dev:all": "run-p start:dev:log start:dev:inventory start:dev:payment start:dev:oms start:dev:wms",
     "build": "nest build",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
@@ -102,4 +102,3 @@
     "minimatch": "7.4.6"
   }
 }
-
