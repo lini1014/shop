@@ -12,12 +12,15 @@ export class InventoryController {
    * Reserviert Bestand für eine Bestellung (Step 1 in OMS)
    */
   @Post('reservations')
-  async reserveStock(@Body() body: { orderId: number; items: { sku: string; qty: number }[] }) {
+  reserveStock(@Body() body: { orderId: number; items: { sku: string; qty: number }[] }) {
     this.logger.log(`Reservierung für Order ${body.orderId}`);
-    const reservationId = await this.service.reserveStock(body.items);
+
+    const reservationId: string | null = this.service.reserveStock(body.items);
+
     if (!reservationId) {
       return { ok: false, reason: 'OUT_OF_STOCK' };
     }
+
     return { ok: true, reservationId };
   }
 
@@ -26,9 +29,11 @@ export class InventoryController {
    * Verbindlich abbuchen (Step 3 in OMS)
    */
   @Post('reservations/commit')
-  async commitReservation(@Body() body: { reservationId: string }) {
+  commitReservation(@Body() body: { reservationId: string }) {
     this.logger.log(`Commit Reservation ${body.reservationId}`);
-    const ok = await this.service.commitReservation(body.reservationId);
+
+    const ok: boolean = this.service.commitReservation(body.reservationId);
+
     return { ok };
   }
 
@@ -37,9 +42,11 @@ export class InventoryController {
    * Reservierung wieder freigeben (bei Payment-Fehler)
    */
   @Post('reservations/release')
-  async releaseReservation(@Body() body: { reservationId: string }) {
+  releaseReservation(@Body() body: { reservationId: string }) {
     this.logger.warn(`Release Reservation ${body.reservationId}`);
-    const ok = await this.service.releaseReservation(body.reservationId);
+
+    const ok: boolean = this.service.releaseReservation(body.reservationId);
+
     return { ok };
   }
 }
