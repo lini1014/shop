@@ -24,17 +24,17 @@ export class PaymentService implements OnModuleInit {
     await this.logClient.connect();
     this.log('info', 'Payment Service verbunden mit Log-Service');
   }
-//*Private Helfermethode für das Logging
+  //*Private Helfermethode für das Logging
   private log(level: 'info' | 'error' | 'warn', message: string) {
     //*Sendet die Log-Nachricht asynchron an die 'log_queue
     this.logClient.emit('log_message', {
-      service: 'PAYMENT', 
+      service: 'PAYMENT',
       level,
       message,
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   // Demo-Kundenkonto-Datenbank: Vor- und Nachname -> Guthaben
   private readonly customerBalances: Record<string, number> = {
     'niklas osimhen': 200.0,
@@ -53,7 +53,7 @@ export class PaymentService implements OnModuleInit {
     const price = this.catalog[productId];
     if (price === undefined) {
       this.log('error', `Unbekannte productId ${productId} im Katalog.`);
-    throw new BadRequestException(`Unknown productId ${productId}`);
+      throw new BadRequestException(`Unknown productId ${productId}`);
     }
     return price;
   }
@@ -81,7 +81,7 @@ export class PaymentService implements OnModuleInit {
     const accountBalance = this.customerBalances[fullKey];
 
     if (accountBalance === undefined) {
-      this.log('warn', `Kunde ${fullKey} nicht in der Datenbank gefunden.`)
+      this.log('warn', `Kunde ${fullKey} nicht in der Datenbank gefunden.`);
       throw new BadRequestException(`UNKNOWN_CUSTOMER: ${create.firstName} ${create.lastName}`);
     }
 
@@ -99,11 +99,14 @@ export class PaymentService implements OnModuleInit {
       lineItems,
       reason: success ? undefined : 'INSUFFICIENT_FUNDS',
     };
-    if(success){
+    if (success) {
       this.log('info', `Zahlung für Order ${create.orderId} (Betrag: ${total}) ERFOLGREICH.`);
-     } else {
-      this.log('warn', `Zahlung für Order ${create.orderId} (Betrag: ${total}) ABGELEHNT. Grund: ${res.reason}`);
-     }
+    } else {
+      this.log(
+        'warn',
+        `Zahlung für Order ${create.orderId} (Betrag: ${total}) ABGELEHNT. Grund: ${res.reason}`,
+      );
+    }
     return res;
   }
 }
