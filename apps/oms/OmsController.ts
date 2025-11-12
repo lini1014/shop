@@ -1,8 +1,8 @@
-// apps/oms/OmsController.ts
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Logger } from '@nestjs/common';
 import { OmsService } from './OmsService';
 import { CreateOrderRequestDto } from '../../libs/dto/CreateOrderRequestDto';
 
+// REST-Einstiegspunkt, der die OMS-Bestellfunktionen nach außen bereitstellt.
 @Controller('orders')
 export class OmsController {
   private readonly logger = new Logger(OmsController.name);
