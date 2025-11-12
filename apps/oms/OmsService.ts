@@ -118,7 +118,7 @@ export class OmsService implements OnModuleInit {
     // 3) WMS anstoßen (hier simuliert)
     order.status = OrderStatus.FULFILLMENT_REQUESTED;
     const wmsPayload = {
-      orderId: `ORD-${order.id}`,
+      orderId: `ORDER-${order.id}`,
       items: order.items,
       customer: {
         firstName: body.firstName,

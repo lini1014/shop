@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable prettier/prettier */
 /// kernlogik
 import { Inject, OnModuleInit, Controller } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -27,18 +24,15 @@ export class WmsService implements OnModuleInit {
 
   async onModuleInit() {
     //* Sender (Clients) müssen sich aktiv verbinden, bevor sie 'emit' benutzen können
-   try {
-      
+    try {
       await this.statusClient.connect();
       await this.logClient.connect();
       this.log('info', 'WMS verbunden mit Log-Service');
-      
     } catch (error) {
       console.error('FEHLER: WMS konnte sich nicht verbinden', error);
       this.log('error', 'WMS konnte sich nicht mit RabbitMQ verbinden.');
     }
   }
-  
   //* private Methode zum Kapseln vom Logging
   private log(level: 'info' | 'error' | 'warn', message: string) {
     //* Senden einer Nachricht an den Log-Service
@@ -54,11 +48,9 @@ export class WmsService implements OnModuleInit {
    */
   @EventPattern('order_received')
   async handleOrderReceived(@Payload() data: OrderPayload, @Ctx() context: RmqContext) {
-    
-    
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const channel : Channel = context.getChannelRef();
-    const originalMsg : Message = context.getMessage();
+    const channel: Channel = context.getChannelRef();
+    const originalMsg: Message = context.getMessage();
 
     this.log('info', `Bestellung erhalten: ${data.orderId}`);
 
