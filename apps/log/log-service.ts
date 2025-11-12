@@ -59,7 +59,7 @@ async handleLog(@Payload() data: LogPayload, @Ctx() context: RmqContext) {
  
     //* Trennlinie für bessere Lesbarkeit
     if (isTerminal) {
-      await fs.promises.appendFile(this.logFilePath, '--------------------\n');
+      await fs.promises.appendFile(this.logFilePath, '--------------------------------------------------------------------\n');
     }
 
     channel.ack(originalMsg);
