@@ -53,10 +53,8 @@ export class OmsService implements OnModuleInit {
 
   private generateOrderId(): number {
     return this.nextOrderId++;
-  } // Basis-URLs via ENV konfigurierbar
+  }
 
-  private readonly inventoryBaseUrl = process.env.INVENTORY_URL ?? 'http://localhost:3001';
-  private readonly paymentBaseUrl = process.env.PAYMENT_URL ?? 'http://localhost:3002';
   /**
    * Hauptablauf: Reserve → Charge → Commit → WMS
    */
@@ -142,9 +140,10 @@ export class OmsService implements OnModuleInit {
     orderId: number,
     items: ItemDto[],
   ): Promise<{ ok: boolean; reservationId?: string }> {
+    const inventoryBaseUrl = process.env.INVENTORY_URL ?? 'http://localhost:3001';
     try {
       const { data } = await axios.post<InventoryReserveRes>(
-        `${this.inventoryBaseUrl}/inventory/reservations`,
+        `${inventoryBaseUrl}/inventory/reservations`,
         { orderId, items },
       );
       this.log(
@@ -163,9 +162,10 @@ export class OmsService implements OnModuleInit {
   }
 
   private async inventoryRelease(reservationId: string): Promise<{ ok: boolean }> {
+    const inventoryBaseUrl = process.env.INVENTORY_URL ?? 'http://localhost:3001';
     try {
       const { data } = await axios.post<InventoryReleaseRes>(
-        `${this.inventoryBaseUrl}/inventory/reservations/release`,
+        `${inventoryBaseUrl}/inventory/reservations/release`,
         { reservationId },
       );
       this.log('warn', `Inventory RELEASE (Kompensation) -> ok=${data.ok}`);
@@ -184,11 +184,12 @@ export class OmsService implements OnModuleInit {
     firstName: string,
     lastName: string,
   ): Promise<PaymentCharge> {
+    const paymentBaseUrl = process.env.PAYMENT_URL ?? 'http://localhost:3002';
     try {
       const { data } = await axios.post<{
         success: boolean;
         reason?: string;
-      }>(`${this.paymentBaseUrl}/payments/authorize`, {
+      }>(`${paymentBaseUrl}/payments/authorize`, {
         orderId,
         items,
         firstName,
