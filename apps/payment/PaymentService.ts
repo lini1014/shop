@@ -16,14 +16,17 @@ type Catalog = Record<number, number>;
 
 @Injectable()
 export class PaymentService implements OnModuleInit {
+  //*Client für den Log-Service wird injiziert
   constructor(@Inject('LOG_CLIENT') private readonly logClient: ClientProxy) {}
 
   async onModuleInit() {
+    //* Verbindung zur RabbitMQ-Queue für das Logging aufbauen
     await this.logClient.connect();
     this.log('info', 'Payment Service verbunden mit Log-Service');
   }
-
+//*Private Helfermethode für das Logging
   private log(level: 'info' | 'error' | 'warn', message: string) {
+    //*Sendet die Log-Nachricht asynchron an die 'log_queue
     this.logClient.emit('log_message', {
       service: 'PAYMENT', 
       level,
