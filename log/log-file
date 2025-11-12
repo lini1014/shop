@@ -1,94 +1,46 @@
-2025-11-11T23:26:47.423Z [OMS] [INFO]: Bestellung 0 ERHALTEN.
-2025-11-11T23:26:47.458Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762903607458
-2025-11-11T23:26:47.461Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762903607458
-2025-11-11T23:26:47.502Z [OMS] [ERROR]: Payment CHARGE unreachable: Request failed with status code 400
-2025-11-11T23:26:49.115Z [OMS] [INFO]: Bestellung 1 ERHALTEN.
-2025-11-11T23:26:49.118Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762903609118
-2025-11-11T23:26:49.119Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762903609118
-2025-11-11T23:26:49.122Z [PAYMENT] [INFO]: Zahlung für Order 1 (Betrag: 74) ERFOLGREICH.
-2025-11-11T23:26:49.123Z [OMS] [INFO]: Payment AUTHORIZE -> success=true reason=- 
-2025-11-11T23:26:49.123Z [OMS] [INFO]: Bestellung 1 erfolgreich bezahlt.
-2025-11-11T23:26:49.123Z [OMS] [INFO]: Bestellung 1 an WMS (Queue: wms_queue) weitergeleitet.
-2025-11-11T23:26:49.127Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-1
-2025-11-11T23:26:51.139Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-1
-2025-11-11T23:26:51.140Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-1 ausgewählt.
-2025-11-11T23:26:53.144Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung verpackt für Bestellung ORD-1
-2025-11-11T23:26:53.144Z [WMS] [INFO]: [WMS] Bestellung ORD-1 verpackt.
-2025-11-11T23:26:53.513Z [OMS] [INFO]: Bestellung 2 ERHALTEN.
-2025-11-11T23:26:53.517Z [INVENTORY] [WARN]: Nicht genug Bestand für SKU-789: 8 < 12
-2025-11-11T23:26:53.517Z [OMS] [INFO]: Inventory RESERVE -> ok=false reservationId=-
-2025-11-11T23:26:53.517Z [OMS] [WARN]: Bestellung 2 storniert. Grund: OUT_OF_STOCK.
---------------------
-2025-11-11T23:26:54.154Z [WMS] [INFO]: [WMS] Bestellung ORD-1 abgeschlossen.
-2025-11-11T23:26:54.154Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung versandt für Bestellung ORD-1
-2025-11-11T23:26:54.154Z [WMS] [INFO]: [WMS] Bestellung ORD-1 versandt
---------------------
-2025-11-11T23:26:55.736Z [OMS] [INFO]: Bestellung 3 ERHALTEN.
-2025-11-11T23:26:55.738Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762903615738
-2025-11-11T23:26:55.739Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762903615738
-2025-11-11T23:26:55.742Z [PAYMENT] [WARN]: Zahlung für Order 3 (Betrag: 36.31) ABGELEHNT. Grund: INSUFFICIENT_FUNDS
-2025-11-11T23:26:55.743Z [OMS] [INFO]: Payment AUTHORIZE -> success=false reason=- 
-2025-11-11T23:26:55.745Z [INVENTORY] [INFO]: ReleaseReservation: res-1762903615738
-2025-11-11T23:26:55.745Z [INVENTORY] [INFO]: Reservierung res-1762903615738 freigegeben
-2025-11-11T23:26:55.746Z [OMS] [WARN]: Inventory RELEASE (Kompensation) -> ok=true
-2025-11-11T23:26:55.746Z [OMS] [WARN]: Bestellung 3 storniert. Grund: PAYMENT_FAILED.
---------------------
 --- Log-Service gestartet ---
-2025-11-11T23:36:07.520Z [INVENTORY] [INFO]: Inventory Service verbunden mit Log-Service
-2025-11-11T23:36:07.879Z [OMS] [INFO]: OMS Service verbunden mit Log-Service und WMS-Service
-2025-11-11T23:36:07.932Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
-2025-11-11T23:36:14.645Z [OMS] [INFO]: Bestellung 0 ERHALTEN.
-2025-11-11T23:36:14.679Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762904174679
-2025-11-11T23:36:14.683Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762904174679
-2025-11-11T23:36:14.721Z [OMS] [ERROR]: Payment CHARGE unreachable: Request failed with status code 400
-2025-11-11T23:36:16.181Z [OMS] [INFO]: Bestellung 1 ERHALTEN.
-2025-11-11T23:36:16.183Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762904176183
-2025-11-11T23:36:16.184Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762904176183
-2025-11-11T23:36:16.188Z [PAYMENT] [INFO]: Zahlung für Order 1 (Betrag: 74) ERFOLGREICH.
-2025-11-11T23:36:16.189Z [OMS] [INFO]: Bestellung 1 erfolgreich bezahlt.
-2025-11-11T23:36:16.189Z [OMS] [INFO]: Payment AUTHORIZE -> success=true reason=- 
-2025-11-11T23:36:16.189Z [OMS] [INFO]: Bestellung 1 an WMS (Queue: wms_queue) weitergeleitet.
-2025-11-11T23:36:16.193Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-1
-2025-11-11T23:36:18.203Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-1
-2025-11-11T23:36:18.203Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-1 ausgewählt.
+2025-11-12T15:05:30.449Z [OMS] [INFO]: OMS Service verbunden mit Log-Service und WMS-Service
+2025-11-12T15:05:30.591Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
 --- Log-Service gestartet ---
-2025-11-12T14:38:56.376Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
-2025-11-12T14:46:42.405Z [OMS] [INFO]: OMS Service verbunden mit Log-Service und WMS-Service
-2025-11-12T14:48:03.331Z [INVENTORY] [INFO]: Inventory Service verbunden mit Log-Service
-2025-11-12T14:48:03.894Z [OMS] [INFO]: OMS Service verbunden mit Log-Service und WMS-Service
-2025-11-12T14:48:04.295Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
-2025-11-12T14:48:16.247Z [OMS] [INFO]: Bestellung 0 ERHALTEN.
-2025-11-12T14:48:16.312Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762958896312
-2025-11-12T14:48:16.322Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762958896312
-2025-11-12T14:48:16.408Z [OMS] [ERROR]: Payment CHARGE unreachable: Request failed with status code 400
-2025-11-12T14:48:31.798Z [OMS] [INFO]: Bestellung 1 ERHALTEN.
-2025-11-12T14:48:31.807Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762958911807
-2025-11-12T14:48:31.813Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762958911807
-2025-11-12T14:48:31.827Z [PAYMENT] [INFO]: Zahlung für Order 1 (Betrag: 74) ERFOLGREICH.
-2025-11-12T14:48:31.831Z [OMS] [INFO]: Bestellung 1 an WMS (Queue: wms_queue) weitergeleitet.
-2025-11-12T14:48:31.830Z [OMS] [INFO]: Bestellung 1 erfolgreich bezahlt.
-2025-11-12T14:48:31.830Z [OMS] [INFO]: Payment AUTHORIZE -> success=true reason=- 
-2025-11-12T14:48:31.846Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-1
-2025-11-12T14:48:33.862Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-1 ausgewählt.
-2025-11-12T14:48:33.862Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-1
-2025-11-12T14:48:35.862Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung verpackt für Bestellung ORD-1
-2025-11-12T14:48:35.863Z [WMS] [INFO]: [WMS] Bestellung ORD-1 verpackt.
-2025-11-12T14:48:36.634Z [OMS] [INFO]: Bestellung 2 ERHALTEN.
-2025-11-12T14:48:36.642Z [INVENTORY] [WARN]: Nicht genug Bestand für SKU-789: 8 < 12
-2025-11-12T14:48:36.644Z [OMS] [WARN]: Bestellung 2 storniert. Grund: OUT_OF_STOCK.
-2025-11-12T14:48:36.644Z [OMS] [INFO]: Inventory RESERVE -> ok=false reservationId=-
+2025-11-12T15:06:14.315Z [OMS] [INFO]: OMS Service verbunden mit Log-Service und WMS-Service
+2025-11-12T15:06:14.411Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
+2025-11-12T15:06:42.364Z [OMS] [INFO]: Bestellung 0 ERHALTEN.
+2025-11-12T15:06:42.412Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762960002410
+2025-11-12T15:06:42.455Z [OMS] [ERROR]: Payment CHARGE unreachable: Request failed with status code 400
+2025-11-12T15:06:49.669Z [OMS] [INFO]: Bestellung 1 ERHALTEN.
+2025-11-12T15:06:49.675Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762960009676
+2025-11-12T15:06:49.685Z [PAYMENT] [INFO]: Zahlung für Order 1 (Betrag: 74) ERFOLGREICH.
+2025-11-12T15:06:49.683Z [OMS] [INFO]: Payment AUTHORIZE -> success=true reason=- 
+2025-11-12T15:06:49.683Z [OMS] [INFO]: Bestellung 1 erfolgreich bezahlt.
+2025-11-12T15:06:49.683Z [OMS] [INFO]: Bestellung 1 an WMS (Queue: wms_queue) weitergeleitet.
+2025-11-12T15:06:49.693Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-1
+2025-11-12T15:06:51.708Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-1 ausgewählt.
+2025-11-12T15:06:51.707Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-1
+2025-11-12T15:06:53.722Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung verpackt für Bestellung ORD-1
+2025-11-12T15:06:53.723Z [WMS] [INFO]: [WMS] Bestellung ORD-1 verpackt.
+2025-11-12T15:06:54.736Z [WMS] [INFO]: [WMS] Bestellung ORD-1 abgeschlossen.
+2025-11-12T15:06:54.736Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung versandt für Bestellung ORD-1
+2025-11-12T15:06:54.736Z [WMS] [INFO]: [WMS] Bestellung ORD-1 versandt
 --------------------
-2025-11-12T14:48:36.869Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung versandt für Bestellung ORD-1
-2025-11-12T14:48:36.869Z [WMS] [INFO]: [WMS] Bestellung ORD-1 versandt
-2025-11-12T14:48:36.869Z [WMS] [INFO]: [WMS] Bestellung ORD-1 abgeschlossen.
+2025-11-12T15:06:56.153Z [OMS] [INFO]: Bestellung 2 ERHALTEN.
+2025-11-12T15:06:56.159Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762960016160
+2025-11-12T15:06:56.167Z [PAYMENT] [INFO]: Zahlung für Order 2 (Betrag: 124.24) ERFOLGREICH.
+2025-11-12T15:06:56.167Z [OMS] [INFO]: Bestellung 2 erfolgreich bezahlt.
+2025-11-12T15:06:56.166Z [OMS] [INFO]: Payment AUTHORIZE -> success=true reason=- 
+2025-11-12T15:06:56.167Z [OMS] [INFO]: Bestellung 2 an WMS (Queue: wms_queue) weitergeleitet.
+2025-11-12T15:06:56.175Z [WMS] [INFO]: [WMS] Bestellung erhalten: ORD-2
+2025-11-12T15:06:58.178Z [WMS] [INFO]: [WMS] Sende Status-Update:Artikel ausgewählt für Bestellung ORD-2
+2025-11-12T15:06:58.179Z [WMS] [INFO]: [WMS] Artikel für Bestellung ORD-2 ausgewählt.
+2025-11-12T15:07:00.194Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung verpackt für Bestellung ORD-2
+2025-11-12T15:07:00.194Z [WMS] [INFO]: [WMS] Bestellung ORD-2 verpackt.
+2025-11-12T15:07:00.307Z [OMS] [INFO]: Bestellung 3 ERHALTEN.
+2025-11-12T15:07:00.312Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762960020314
+2025-11-12T15:07:00.326Z [PAYMENT] [WARN]: Zahlung für Order 3 (Betrag: 36.31) ABGELEHNT. Grund: INSUFFICIENT_FUNDS
+2025-11-12T15:07:00.324Z [OMS] [INFO]: Payment AUTHORIZE -> success=false reason=- 
+2025-11-12T15:07:00.329Z [OMS] [WARN]: Inventory RELEASE (Kompensation) -> ok=true
+2025-11-12T15:07:00.329Z [OMS] [WARN]: Bestellung 3 storniert. Grund: PAYMENT_FAILED.
 --------------------
-2025-11-12T14:48:41.703Z [OMS] [INFO]: Bestellung 3 ERHALTEN.
-2025-11-12T14:48:41.710Z [INVENTORY] [INFO]: Reservierung erfolgreich: res-1762958921710
-2025-11-12T14:48:41.712Z [OMS] [INFO]: Inventory RESERVE -> ok=true reservationId=res-1762958921710
-2025-11-12T14:48:41.722Z [PAYMENT] [WARN]: Zahlung für Order 3 (Betrag: 36.31) ABGELEHNT. Grund: INSUFFICIENT_FUNDS
-2025-11-12T14:48:41.725Z [OMS] [INFO]: Payment AUTHORIZE -> success=false reason=- 
-2025-11-12T14:48:41.732Z [INVENTORY] [INFO]: Reservierung res-1762958921710 freigegeben
-2025-11-12T14:48:41.732Z [INVENTORY] [INFO]: ReleaseReservation: res-1762958921710
-2025-11-12T14:48:41.734Z [OMS] [WARN]: Bestellung 3 storniert. Grund: PAYMENT_FAILED.
-2025-11-12T14:48:41.734Z [OMS] [WARN]: Inventory RELEASE (Kompensation) -> ok=true
+2025-11-12T15:07:01.198Z [WMS] [INFO]: [WMS] Sende Status-Update:Bestellung versandt für Bestellung ORD-2
+2025-11-12T15:07:01.199Z [WMS] [INFO]: [WMS] Bestellung ORD-2 abgeschlossen.
+2025-11-12T15:07:01.199Z [WMS] [INFO]: [WMS] Bestellung ORD-2 versandt
 --------------------
