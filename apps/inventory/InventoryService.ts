@@ -44,7 +44,6 @@ export class InventoryService implements OnModuleInit {
     for (const item of items) {
       const current = this.stock.get(item.sku) ?? 0;
       if (current < item.qty) {
-        this.log('warn', `Nicht genug Bestand für ${item.sku}: ${current} < ${item.qty}`);
         return null;
       }
     }
@@ -57,8 +56,6 @@ export class InventoryService implements OnModuleInit {
     }
 
     this.reservations.set(reservationId, { id: reservationId, items });
-
-    this.log('info', `Reservierung erfolgreich: ${reservationId}`);
     return reservationId;
   }
 

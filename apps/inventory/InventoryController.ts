@@ -10,11 +10,10 @@ export class InventoryController implements OnModuleInit {
   ) {}
   async onModuleInit() {
     await this.logClient.connect();
-    this.log('info', 'InventoryController verbunden mit Log-Service');
   }
   private log(level: 'info' | 'error' | 'warn', message: string) {
     this.logClient.emit('log_message', {
-      service: 'INVENTORY_Controller', // Eindeutiger Name
+      service: 'INVENTORY',
       level,
       message,
       timestamp: new Date().toISOString(),
@@ -27,14 +26,15 @@ export class InventoryController implements OnModuleInit {
    */
   @Post('reservations')
   reserveStock(@Body() body: { orderId: number; items: { sku: string; qty: number }[] }) {
-    this.log('info', `Reservierung für Order ${body.orderId}`);
+    this.log('info', `Eingehende Reservierung für Order ${body.orderId}`);
 
     const reservationId: string | null = this.service.reserveStock(body.items);
 
     if (!reservationId) {
+      this.log('warn', `Reservierung für Order ${body.orderId} fehlgeschlagen: OUT_OF_STOCK`);
       return { ok: false, reason: 'OUT_OF_STOCK' };
     }
-
+    this.log('info', `Reservierung für Order ${body.orderId} erfolgreich: ${reservationId}`);
     return { ok: true, reservationId };
   }
 

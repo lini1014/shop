@@ -99,14 +99,6 @@ export class PaymentService implements OnModuleInit {
       lineItems,
       reason: success ? undefined : 'INSUFFICIENT_FUNDS',
     };
-    if (success) {
-      this.log('info', `Zahlung für Order ${create.orderId} (Betrag: ${total}) ERFOLGREICH.`);
-    } else {
-      this.log(
-        'warn',
-        `Zahlung für Order ${create.orderId} (Betrag: ${total}) ABGELEHNT. Grund: ${res.reason}`,
-      );
-    }
     return res;
   }
 }

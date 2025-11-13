@@ -21,12 +21,11 @@ export class OmsController implements OnModuleInit {
   ) {}
   async onModuleInit() {
     await this.logClient.connect();
-    this.log('info', 'OmsController verbunden mit Log-Service');
   }
 
   private log(level: 'info' | 'error' | 'warn', message: string) {
     this.logClient.emit('log_message', {
-      service: 'OMS_Controller',
+      service: 'OMS',
       level,
       message,
       timestamp: new Date().toISOString(),
@@ -37,7 +36,7 @@ export class OmsController implements OnModuleInit {
   async create(@Body() body: CreateOrderRequestDto) {
     this.log(
       'info',
-      `Forwarding order to service: firstName=${body.firstName}, lastName=${body.lastName}, items=${body.items?.length ?? 0}`,
+      `Bestellung weiterleiten an Service: firstName=${body.firstName}, lastName=${body.lastName}, items=${body.items?.length ?? 0}`,
     );
     const order = await this.omsService.createOrderFromSelection(body);
     return { id: order.id, status: order.status };

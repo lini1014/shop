@@ -1,6 +1,7 @@
 import { Inject, OnModuleInit, Controller } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { EventPattern, Payload } from '@nestjs/microservices';
+import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
+import { Channel, Message } from 'amqplib';
 
 //* Aussehen einer Order-Nachricht (Beispiel)
 interface OrderPayload {
@@ -10,7 +11,6 @@ interface OrderPayload {
 
 @Controller()
 export class WmsService implements OnModuleInit {
-  //* Hier werden die Sender (Clients) "injiziert" die wir in "wms-modules" definiert haben
   constructor(
     @Inject('WMS_STATUS_CLIENT') private readonly statusClient: ClientProxy,
     @Inject('LOG_CLIENT') private readonly logClient: ClientProxy,
@@ -29,7 +29,6 @@ export class WmsService implements OnModuleInit {
 
   //* private Methode zum Kapseln vom Logging
   private log(level: 'info' | 'error' | 'warn', message: string) {
-    //* Senden einer Nachricht an den Log-Service
     this.logClient.emit('log_message', {
       service: 'WMS',
       level,
@@ -40,20 +39,24 @@ export class WmsService implements OnModuleInit {
   /** Empfänger:
    * Diese Methode wird automatisch aufgerufen, wenn eine Nachricht mit 'order_received' auf der 'wms_queue' eintrifft
    */
-  @EventPattern('order_received')
-  async handleOrderReceived(@Payload() data: OrderPayload) {
+  @MessagePattern('order_received')
+  async handleOrderReceived(@Payload() data: OrderPayload, @Ctx() context: RmqContext) {
+    const channel: Channel = context.getChannelRef();
+
+    const originalMsg: Message = context.getMessage();
+
     this.log('info', `Bestellung erhalten: ${data.orderId}`);
 
     try {
       //* Simulation der Haupt-Geschäftslogik
 
       //* Simulation von "Artikel auswählen"
-      await this.sleep(20000); // 2 Sekunden warten
+      await this.sleep(10000); // 2 Sekunden warten
       this.publishStatus(data.orderId, 'Artikel ausgewählt');
       this.log('info', `Artikel für Bestellung ${data.orderId} ausgewählt.`);
 
       //* Simulation von "Bestellung verpacken"
-      await this.sleep(20000); // 2 Sekunden warten
+      await this.sleep(10000); // 2 Sekunden warten
       this.publishStatus(data.orderId, 'Bestellung verpackt');
       this.log('info', `Bestellung ${data.orderId} verpackt.`);
 
@@ -61,10 +64,23 @@ export class WmsService implements OnModuleInit {
       await this.sleep(10000); // 1 Sekunde warten
       this.publishStatus(data.orderId, 'Bestellung versandt');
       this.log('info', `Bestellung ${data.orderId} versandt`);
-      await this.sleep(50000); // 0.5 Sekunden warten
+      await this.sleep(1000); // 0.5 Sekunden warten
       this.log('info', `Bestellung ${data.orderId} abgeschlossen.`);
+
+      /** Erfolg: RabbitMQ wird weitergegeben, dass die Nachricht erfolgreich verarbeitet wurde und
+       * aus der Queue gelöscht werden kann */
+
+      channel.ack(originalMsg);
     } catch (error) {
-      this.log('error', `Fehler bei der Verarbeitung der Bestellung ${data.orderId}:${error}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.log(
+        'error',
+        `Fehler bei der Verarbeitung der Bestellung ${data.orderId}:${errorMessage}`,
+      );
+
+      /** Fehler: RabbitMQ wird weitergegeben, dass ein Fehler aufgetreten ist */
+
+      channel.nack(originalMsg, false, true);
     }
   }
 
