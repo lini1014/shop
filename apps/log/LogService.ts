@@ -21,16 +21,10 @@ export class LogService {
   private logFilePath: string; //* Pfad zur Datei, in die geschrieben wird
 
   constructor() {
-  //* Definiert den Pfad: <aktuelles_verzeichnis>/log/log-file
-  const logDir = path.join(process.cwd(), 'log');
-  this.logFilePath = path.join(logDir, 'log-file');
+  //* Definiert den Pfad direkt unterhalb des Projektwurzelverzeichnisses
+  this.logFilePath = path.join(process.cwd(), 'log-file');
 
   console.log(`Log-Datei Pfad: ${this.logFilePath}`);
-//*Sicherstellung, dass der Ordner /log existiert
-  if(!fs.existsSync(logDir)){
-   console.log(`Erstelle Log-Verzeichnis: ${logDir}`);
-   fs.mkdirSync(logDir);
-  }
   try {
     fs.appendFileSync(this.logFilePath, '--- Log-Service gestartet ---\n');
   }

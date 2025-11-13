@@ -48,7 +48,6 @@ export class WmsService implements OnModuleInit {
    */
   @EventPattern('order_received')
   async handleOrderReceived(@Payload() data: OrderPayload, @Ctx() context: RmqContext) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const channel: Channel = context.getChannelRef();
     const originalMsg: Message = context.getMessage();
 
@@ -58,20 +57,21 @@ export class WmsService implements OnModuleInit {
       //* Simulation der Haupt-Geschäftslogik
 
       //* Simulation von "Artikel auswählen"
-      await this.sleep(2000); // 2 Sekunden warten
+      await this.sleep(20000); // 2 Sekunden warten
       this.publishStatus(data.orderId, 'Artikel ausgewählt');
       this.log('info', `Artikel für Bestellung ${data.orderId} ausgewählt.`);
 
       //* Simulation von "Bestellung verpacken"
-      await this.sleep(2000); // 2 Sekunden warten
+      await this.sleep(20000); // 2 Sekunden warten
       this.publishStatus(data.orderId, 'Bestellung verpackt');
       this.log('info', `Bestellung ${data.orderId} verpackt.`);
 
       //* Simulation von "Bestellung versenden"
-      await this.sleep(1000); // 1 Sekunde warten
+      await this.sleep(10000); // 1 Sekunde warten
       this.publishStatus(data.orderId, 'Bestellung versandt');
       this.log('info', `Bestellung ${data.orderId} versandt`);
 
+      await this.sleep(50000); // 0.5 Sekunden warten
       this.log('info', `Bestellung ${data.orderId} abgeschlossen.`);
 
       /** Erfolg: RabbitMQ wird weitergegeben, dass die Nachricht erfolgreich verarbeitet wurde und 
@@ -99,7 +99,7 @@ export class WmsService implements OnModuleInit {
     this.statusClient.emit('status_update', payload);
   }
 
-  //* Eine simple Helfer-Funktion um zu warten 
+  //* Eine simple Helfer-Funktion um zu warten
   private sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
