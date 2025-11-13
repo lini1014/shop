@@ -42,9 +42,11 @@ export class OmsController implements OnModuleInit {
     return { id: order.id, status: order.status };
   }
 
-  // GET /orders/:id — Status der Order holen
+  // GET /orders/:id - Status der Order holen
   @Get(':id')
   getOrderById(@Param('id', ParseIntPipe) id: number) {
-    return this.omsService.getOrderById(id);
+    const order = this.omsService.getOrderById(id);
+    const wmsStatus = this.omsService.getLastWmsStatus(order.id);
+    return { ...order, status: wmsStatus ?? order.status };
   }
 }

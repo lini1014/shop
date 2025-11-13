@@ -14,6 +14,8 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import axios from 'axios';
+import * as fs from 'fs';
+import * as path from 'path';
 import { ItemDto } from '../../libs/dto/ItemDTO';
 import { OrderDto, OrderStatus } from '../../libs/dto/OrderDTO';
 import { CreateOrderRequestDto } from '../../libs/dto/CreateOrderRequestDto';
@@ -35,6 +37,8 @@ interface PaymentCharge {
 
 @Injectable()
 export class OmsService implements OnModuleInit {
+  private readonly logFilePath = path.join(process.cwd(), 'log', 'log-file');
+
   //*Client für den Log-Service wird injiziert
   constructor(
     @Inject('LOG_CLIENT') private readonly logClient: ClientProxy,
@@ -148,6 +152,28 @@ export class OmsService implements OnModuleInit {
       );
     }
     return order;
+  }
+
+  getLastWmsStatus(orderId: number): string | null {
+    try {
+      if (!fs.existsSync(this.logFilePath)) {
+        return null;
+      }
+      const lines = fs.readFileSync(this.logFilePath, 'utf-8').split(/\r?\n/);
+      const searchToken = `ORDER-${orderId}`;
+      for (let i = lines.length - 1; i >= 0; i--) {
+        const line = lines[i];
+        if (!line || !line.includes('[WMS]') || !line.includes(searchToken)) {
+          continue;
+        }
+        const match = line.match(/\]:\s*(.+)$/);
+        return match ? match[1].trim() : line.trim();
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.log('warn', `WMS-Status konnte nicht gelesen werden: ${message}`);
+    }
+    return null;
   }
 
   // ---------------- Inventory Calls ----------------

@@ -1,10 +1,7 @@
 import { Controller, Post, Body, Inject, OnModuleInit } from '@nestjs/common';
-import { InventoryService } from './InventoryService';
-<<<<<<< HEAD
-import { ItemDto } from '../../libs/dto/ItemDTO';
-=======
 import { ClientProxy } from '@nestjs/microservices';
->>>>>>> 844581d25236b4eaa4d1b828c34240f20ba867ca
+import { InventoryService } from './InventoryService';
+import { ItemDto } from '../../libs/dto/ItemDTO';
 
 @Controller('inventory')
 export class InventoryController implements OnModuleInit {
@@ -29,17 +26,9 @@ export class InventoryController implements OnModuleInit {
    * Reserviert Bestand für eine Bestellung (Step 1 in OMS)
    */
   @Post('reservations')
-<<<<<<< HEAD
-  async reserveStock(@Body() body: { orderId: number; items: ItemDto[] }) {
-    this.logger.log(`Reservierung für Order ${body.orderId}`);
-    const reservationId = await this.service.reserveStock(body.items);
-=======
-  reserveStock(@Body() body: { orderId: number; items: { sku: string; qty: number }[] }) {
-    this.log('info', `Eingehende Reservierung für Order ${body.orderId}`);
-
-    const reservationId: string | null = this.service.reserveStock(body.items);
-
->>>>>>> 844581d25236b4eaa4d1b828c34240f20ba867ca
+  reserveStock(@Body() body: { orderId: number; items: ItemDto[] }) {
+    this.log('info', `Reservierung für Order ${body.orderId}`);
+    const reservationId = this.service.reserveStock(body.items);
     if (!reservationId) {
       this.log('warn', `Reservierung für Order ${body.orderId} fehlgeschlagen: OUT_OF_STOCK`);
       return { ok: false, reason: 'OUT_OF_STOCK' };
