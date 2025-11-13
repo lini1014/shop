@@ -1,4 +1,6 @@
-# Setup-Anleitung – Shop-Projekt
+# Copyright: Niklas Lisker, Maximilian Zaharia, David Daglioglu, Emirhan Yasa
+
+# Setup-Anleitung - Shop-Projekt
 
 ## 1. Installation
 

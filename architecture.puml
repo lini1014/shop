@@ -1,5 +1,5 @@
 @startuml
-title Shop – Integrationsarchitektur 
+title Shop - Integrationsarchitektur 
 
 skinparam componentStyle rectangle
 skinparam wrapWidth 200
@@ -12,11 +12,14 @@ package "Shop" {
   [Inventory Service (IS)\ngRPC] as IS
   [Payment Service (PS)\nREST API (extern)] as PS
   [Warehouse Management System (WMS)\nMessage Queues / RabbitMQ] as WMS
+  [Log Service\nRabbitMQ Consumer] as LOGSVC
+  [Status Service\nRabbitMQ Consumer] as STATUS
   queue "RabbitMQ" as MQ
   database "Logfile\n(order.log)" as LOG
+  database "WMS Statusfile\n(wms-status)" as WMSFILE
 }
 
-' --- Notizen zu den Komponenten (wie im Bild) ---
+' --- Notizen zu den Komponenten ---
 note right of OMS
 OMS:
 - nimmt Bestellungen an
@@ -26,42 +29,55 @@ end note
 
 note bottom of IS
 IS:
-- prüft Lagerbestand
+- prueft Lagerbestand
 - reserviert Artikel
 end note
 
 note bottom of PS
 PS:
-- führt Zahlung durch
-- liefert Zahlungsstatus zurück
+- fuehrt Zahlung durch
+- liefert Zahlungsstatus zurueck
 end note
 
 note bottom of WMS
 WMS:
-- erhält Fulfillment-Aufträge
+- erhaelt Fulfillment-Auftraege
 - sendet Statusmeldungen
+end note
+
+note right of LOGSVC
+Log-Service:
+- konsumiert log_queue
+- persistiert order.log
+end note
+
+note right of STATUS
+Status-Service:
+- konsumiert status_updates_queue
+- schreibt wms-status Datei
+- OMS liest Datei bei GET
 end note
 
 ' --- Prozessfluss (1) bis (8) ---
 Kunde --> OMS : (1) Bestellung anlegen\nHTTP POST /orders
-OMS --> IS    : (2) Verfügbarkeit prüfen\nInventoryReserve
-IS  --> OMS   : (3) Ergebnis: verfügbar / nicht verfügbar
+OMS --> IS    : (2) Verfuegbarkeit pruefen\nInventoryReserve
+IS  --> OMS   : (3) Ergebnis: verfuegbar / nicht verfuegbar
 OMS --> IS    : (4) Artikel reservieren\nInventoryReserve()
-OMS --> PS    : (5) Zahlung ausführen\nPOST /payments
+OMS --> PS    : (5) Zahlung ausfuehren\nPOST /payments
 PS  --> OMS   : (6) Zahlungsstatus\nSUCCESS / FAILED
 OMS --> MQ    : (7) Nachricht senden\n(Auftrag starten)
 MQ  --> WMS   : Zustellung Auftrag \nCreateFulfillment
-WMS --> MQ    : Statusmeldungen\n(order_status)
-MQ  --> OMS   : (8) Statusmeldungen\n(order_status)
+WMS --> MQ    : Statusmeldungen\n(status_update)
+MQ  --> STATUS : status_updates_queue
+STATUS --> WMSFILE : Status persistieren
+WMSFILE --> OMS : (8) GET /orders/:id\nliest letzten Status
 
-' --- Logging NACH JEDEM SCHRITT ---
-OMS ..> LOG : (1) Bestellung geloggt
-OMS ..> LOG : (2) Availability-Check geloggt
-IS  ..> LOG : (3) Ergebnis geloggt
-OMS ..> LOG : (4) Reservierung geloggt
-OMS ..> LOG : (5) Zahlung initiiert geloggt
-PS  ..> LOG : (6) Zahlungsstatus geloggt
-OMS ..> LOG : (7) WMS-Auftrag gesendet geloggt
-WMS ..> LOG : (8) Statusmeldung geloggt
+' --- Logging ---
+OMS ..> MQ : emit log_message
+IS  ..> MQ : emit log_message
+PS  ..> MQ : emit log_message
+WMS ..> MQ : emit log_message
+MQ  --> LOGSVC : log_queue\n(log_message)
+LOGSVC --> LOG : append log entry
 
 @enduml
