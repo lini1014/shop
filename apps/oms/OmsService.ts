@@ -90,6 +90,7 @@ export class OmsService implements OnModuleInit {
       throw new ConflictException({
         message: 'Reservierung im Inventory fehlgeschlagen',
         reason: 'OUT_OF_STOCK',
+        orderId: order.id,
       });
     }
     const reservationId = reserveRes.reservationId;
@@ -106,7 +107,11 @@ export class OmsService implements OnModuleInit {
       this.orders.set(order.id, order);
       this.log('warn', `Bestellung ${order.id} storniert. Grund: ${order.reason}.`);
       throw new HttpException(
-        { message: 'Zahlung im Payment-Service fehlgeschlagen', reason: order.reason },
+        {
+          message: 'Zahlung im Payment-Service fehlgeschlagen',
+          reason: order.reason,
+          orderId: order.id,
+        },
         HttpStatus.BAD_REQUEST,
       );
     }

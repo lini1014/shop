@@ -1,5 +1,6 @@
 import { Controller, Post, Body, Logger } from '@nestjs/common';
 import { InventoryService } from './InventoryService';
+import { ItemDto } from '../../libs/dto/ItemDTO';
 
 @Controller('inventory')
 export class InventoryController {
@@ -12,7 +13,7 @@ export class InventoryController {
    * Reserviert Bestand für eine Bestellung (Step 1 in OMS)
    */
   @Post('reservations')
-  async reserveStock(@Body() body: { orderId: number; items: { sku: string; qty: number }[] }) {
+  async reserveStock(@Body() body: { orderId: number; items: ItemDto[] }) {
     this.logger.log(`Reservierung für Order ${body.orderId}`);
     const reservationId = await this.service.reserveStock(body.items);
     if (!reservationId) {

@@ -1,9 +1,11 @@
 import { Injectable, Inject, OnModuleInit } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 
+import { ItemDto } from '../../libs/dto/ItemDTO';
+
 interface Reservation {
   id: string;
-  items: { sku: string; qty: number }[];
+  items: ItemDto[];
 }
 
 @Injectable()
@@ -26,11 +28,11 @@ export class InventoryService implements OnModuleInit {
       timestamp: new Date().toISOString(),
     });
   }
-  // Beispielhafte Lagerbestände
-  private stock = new Map<string, number>([
-    ['SKU-123', 20],
-    ['SKU-456', 15],
-    ['SKU-789', 8],
+  // Beispielhafte Lagerbestände (überschneidend mit Payment-Katalog)
+  private stock = new Map<number, number>([
+    [101, 20],
+    [102, 15],
+    [103, 8],
   ]);
 
   // Temporäre Reservierungen
@@ -39,12 +41,15 @@ export class InventoryService implements OnModuleInit {
   /**
    * Reserviert Bestand für eine Bestellung
    */
-  reserveStock(items: { sku: string; qty: number }[]): string | null {
+  reserveStock(items: ItemDto[]): string | null {
     // Prüfen, ob genug Bestand vorhanden ist
     for (const item of items) {
-      const current = this.stock.get(item.sku) ?? 0;
-      if (current < item.qty) {
-        this.log('warn', `Nicht genug Bestand für ${item.sku}: ${current} < ${item.qty}`);
+      const current = this.stock.get(item.productId) ?? 0;
+      if (current < item.quantity) {
+        this.log(
+          'warn',
+          `Nicht genug Bestand für Produkt ${item.productId}: ${current} < ${item.quantity}`,
+        );
         return null;
       }
     }
@@ -52,8 +57,8 @@ export class InventoryService implements OnModuleInit {
     // Reservierung durchführen
     const reservationId = `res-${Date.now()}`;
     for (const item of items) {
-      const current = this.stock.get(item.sku) ?? 0;
-      this.stock.set(item.sku, current - item.qty);
+      const current = this.stock.get(item.productId) ?? 0;
+      this.stock.set(item.productId, current - item.quantity);
     }
 
     this.reservations.set(reservationId, { id: reservationId, items });
@@ -93,8 +98,8 @@ export class InventoryService implements OnModuleInit {
 
     // Bestand wieder zurückbuchen
     for (const item of reservation.items) {
-      const current = this.stock.get(item.sku) ?? 0;
-      this.stock.set(item.sku, current + item.qty);
+      const current = this.stock.get(item.productId) ?? 0;
+      this.stock.set(item.productId, current + item.quantity);
     }
 
     this.reservations.delete(reservationId);
@@ -106,7 +111,7 @@ export class InventoryService implements OnModuleInit {
   /**
    * Optional: aktueller Bestand (für Debug oder Test)
    */
-  getStock(sku: string): number {
-    return this.stock.get(sku) ?? 0;
+  getStock(productId: number): number {
+    return this.stock.get(productId) ?? 0;
   }
 }
