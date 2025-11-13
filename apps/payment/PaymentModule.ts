@@ -3,6 +3,9 @@ import { PaymentController } from './PaymentController';
 import { PaymentService } from './PaymentService';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
+/**
+ * Stellt den PaymentContext bereit und verbindet ihn mit dem Log-Service via RabbitMQ.
+ */
 @Module({
   controllers: [PaymentController],
   providers: [PaymentService],

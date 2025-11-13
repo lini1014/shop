@@ -3,6 +3,10 @@ import { ItemDto } from 'libs/dto/ItemDTO';
 import { PaymentDto } from 'libs/dto/PaymentDTO';
 import { Inject, OnModuleInit } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+
+/**
+ * Struktur des Autorisierungs-Ergebnisses, das zurück an den Auftraggeber geht.
+ */
 export interface PaymentResult {
   orderId: number;
   success: boolean;
@@ -14,6 +18,9 @@ export interface PaymentResult {
 
 type Catalog = Record<number, number>;
 
+/**
+ * Zentraler Service für Preisberechnung, Konto-Prüfung und Logging.
+ */
 @Injectable()
 export class PaymentService implements OnModuleInit {
   //*Client für den Log-Service wird injiziert
@@ -35,7 +42,9 @@ export class PaymentService implements OnModuleInit {
     });
   }
 
-  // Demo-Kundenkonto-Datenbank: Vor- und Nachname -> Guthaben
+  /**
+   * Demo-Kundenkonto-Datenbank: Vor- und Nachname -> Guthaben.
+   */
   private readonly customerBalances: Record<string, number> = {
     'niklas osimhen': 200.0,
     'maxi icardi': 4.2,
@@ -43,12 +52,18 @@ export class PaymentService implements OnModuleInit {
     'emirhan aktürkoğlu': 200.0,
   };
 
+  /**
+   * Demo-Katalog für Produktpreise (productId -> Preis).
+   */
   private readonly catalog: Catalog = {
     101: 7.0,
     102: 60.0,
     103: 9.77,
   };
 
+  /**
+   * Liefert den Preis für die angegebene Produkt-ID oder wirft einen Fehler.
+   */
   getPrice(productId: number): number {
     const price = this.catalog[productId];
     if (price === undefined) {
@@ -58,6 +73,9 @@ export class PaymentService implements OnModuleInit {
     return price;
   }
 
+  /**
+   * Hängt an jedes Item den berechneten Einzel- und Zeilenpreis an.
+   */
   priceItems(items: ItemDto[]) {
     return items.map((it) => {
       const unitPrice = this.getPrice(it.productId);
@@ -66,6 +84,9 @@ export class PaymentService implements OnModuleInit {
     });
   }
 
+  /**
+   * Summiert alle lineItems und gibt den Gesamtpreis auf zwei Dezimalstellen gerundet zurück.
+   */
   computeTotal(items: ItemDto[]): number {
     const priced = this.priceItems(items);
     const total = priced.reduce((sum, li) => sum + li.lineTotal, 0);
@@ -73,7 +94,8 @@ export class PaymentService implements OnModuleInit {
   }
 
   /**
-   * Prüft, ob das Konto-Guthaben reicht und gibt das Ergebnis zurück.
+   * Prüft anhand der Demo-Datenbank, ob das Guthaben für eine Bestellung reicht.
+   * Gibt immer ein PaymentResult zurück oder wirft BadRequest bei unbekanntem Kunden.
    */
   authorize(create: PaymentDto): PaymentResult {
     const normalize = (s: string) => s.trim().toLowerCase();

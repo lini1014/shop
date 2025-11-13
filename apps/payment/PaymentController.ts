@@ -4,6 +4,9 @@ import { PaymentDto } from 'libs/dto/PaymentDTO';
 import { PaymentService } from './PaymentService';
 import { ClientProxy } from '@nestjs/microservices';
 
+/**
+ * REST-Entry-Point für Payment-Autorisierung inklusive Logging in RabbitMQ.
+ */
 @ApiTags('payments')
 @Controller('payments')
 export class PaymentController implements OnModuleInit {
@@ -16,6 +19,9 @@ export class PaymentController implements OnModuleInit {
     await this.logClient.connect();
   }
 
+  /**
+   * Kleiner Helper, damit Controller-Methoden einfach loggen können.
+   */
   private log(level: 'info' | 'error' | 'warn', message: string) {
     this.logClient.emit('log_message', {
       service: 'PAYMENT',
@@ -25,6 +31,9 @@ export class PaymentController implements OnModuleInit {
     });
   }
 
+  /**
+   * Autorisiert eine Bestellung und gibt nur den Erfolgsschalter zurück.
+   */
   @Post('authorize')
   @ApiOperation({ summary: 'Nur Erfolg/Fehler zurückgeben' })
   authorize(@Body() dto: PaymentDto): { success: boolean } {

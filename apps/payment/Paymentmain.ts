@@ -1,24 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { PaymentModule } from './PaymentModule';
 import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
+/**
+ * Startet den Payment Microservice
+ */
 async function bootstrap() {
   const app = await NestFactory.create(PaymentModule, { cors: true });
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
-
-  const config = new DocumentBuilder()
-    .setTitle('Payment API')
-    .setDescription(
-      'Zahlungen inkl. Idempotenz (Transaction-Id), Test-Header (Simulate-Result) & Events',
-    )
-    .setVersion('1.0.0')
-    .addServer('http://localhost:3002', 'Local')
-    .build();
-
-  const doc = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/docs', app, doc, { swaggerOptions: { persistAuthorization: true } });
 
   const port = Number(process.env.PORT ?? 3002);
   await app.listen(port, '0.0.0.0');
