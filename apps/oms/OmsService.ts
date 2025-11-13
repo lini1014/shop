@@ -19,7 +19,9 @@ import * as path from 'path';
 import { ItemDto } from '../../libs/dto/ItemDTO';
 import { OrderDto, OrderStatus } from '../../libs/dto/OrderDTO';
 import { CreateOrderRequestDto } from '../../libs/dto/CreateOrderRequestDto';
+import type { ClientGrpc } from '@nestjs/microservices';
 import { ClientProxy } from '@nestjs/microservices';
+import { Observable, firstValueFrom } from 'rxjs';
 
 // ---- Antwort-Interfaces der Upstream-Services (statisch typisiert) ----
 interface InventoryReserveRes {
@@ -35,14 +37,30 @@ interface PaymentCharge {
   reason?: string;
 }
 
+interface InventoryReserveReq {
+  orderId: number;
+  items: ItemDto[];
+}
+
+interface InventoryReleaseReq {
+  reservationId: string;
+}
+
+interface InventoryGrpcClient {
+  reserveStock(data: InventoryReserveReq): Observable<InventoryReserveRes>;
+  releaseReservation(data: InventoryReleaseReq): Observable<InventoryReleaseRes>;
+}
+
 @Injectable()
 export class OmsService implements OnModuleInit {
   private readonly logFilePath = path.join(process.cwd(), 'log', 'log-file');
+  private inventoryGrpcService!: InventoryGrpcClient;
 
   //*Client für den Log-Service wird injiziert
   constructor(
     @Inject('LOG_CLIENT') private readonly logClient: ClientProxy,
     @Inject('WMS_CLIENT') private readonly wmsClient: ClientProxy,
+    @Inject('INVENTORY_GRPC_CLIENT') private readonly inventoryClient: ClientGrpc,
   ) {}
 
   async onModuleInit() {
@@ -50,7 +68,12 @@ export class OmsService implements OnModuleInit {
     await this.logClient.connect();
     //*Hier ebenso Aufbauen der Verbindung zum WMS'
     await this.wmsClient.connect();
-    this.log('info', 'OMS Service verbunden mit Log-Service und WMS-Service');
+    this.inventoryGrpcService =
+      this.inventoryClient.getService<InventoryGrpcClient>('InventoryService');
+    this.log(
+      'info',
+      'OMS Service verbunden mit Log-Service, WMS-Service und Inventory (gRPC)',
+    );
   }
   //*Private Helfermethode für das Logging
   private log(level: 'info' | 'error' | 'warn', message: string) {
@@ -182,12 +205,11 @@ export class OmsService implements OnModuleInit {
     items: ItemDto[],
   ): Promise<{ ok: boolean; reservationId?: string }> {
     try {
-      const { data } = await axios.post<InventoryReserveRes>(
-        `http://localhost:3001/inventory/reservations`,
-        { orderId, items },
+      const response = await firstValueFrom(
+        this.inventoryGrpcService.reserveStock({ orderId, items }),
       );
-      this.log('info', `Inventory RESERVE -> ok=${data.ok}`);
-      return { ok: data.ok, reservationId: data.reservationId };
+      this.log('info', `Inventory RESERVE -> ok=${response.ok}`);
+      return { ok: response.ok, reservationId: response.reservationId };
     } catch (e) {
       const errorDetails = e instanceof Error ? e.message : String(e);
       this.log('error', `Inventory RESERVE unreachable: ${errorDetails}`);
@@ -200,12 +222,11 @@ export class OmsService implements OnModuleInit {
 
   private async inventoryRelease(reservationId: string): Promise<{ ok: boolean }> {
     try {
-      const { data } = await axios.post<InventoryReleaseRes>(
-        `http://localhost:3001/inventory/reservations/release`,
-        { reservationId },
+      const response = await firstValueFrom(
+        this.inventoryGrpcService.releaseReservation({ reservationId }),
       );
-      this.log('warn', `Inventory RELEASE (Kompensation) -> ok=${data.ok}`);
-      return { ok: data.ok };
+      this.log('warn', `Inventory RELEASE (Kompensation) -> ok=${response.ok}`);
+      return { ok: response.ok };
     } catch (e) {
       // Release-Fehler nicht eskalieren (Order bleibt ohnehin CANCELLED), nur loggen
       const errorDetails = e instanceof Error ? e.message : String(e);

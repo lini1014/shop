@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { OmsController } from './OmsController';
 import { OmsService } from './OmsService';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import * as path from 'path';
 
 // Bündelt Controller, Service und Messaging-Clients des OMS.
 @Module({
@@ -27,6 +28,15 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           queueOptions: {
             durable: false,
           },
+        },
+      },
+      {
+        name: 'INVENTORY_GRPC_CLIENT',
+        transport: Transport.GRPC,
+        options: {
+          package: 'inventory',
+          protoPath: path.join(process.cwd(), 'proto', 'inventory.proto'),
+          url: process.env.INVENTORY_GRPC_URL || 'localhost:50051',
         },
       },
     ]),

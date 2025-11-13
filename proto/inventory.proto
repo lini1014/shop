@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package inventory;
+
+message Item {
+  int32 productId = 1;
+  int32 quantity = 2;
+}
+
+message ReserveStockRequest {
+  int32 orderId = 1;
+  repeated Item items = 2;
+}
+
+message ReserveStockResponse {
+  bool ok = 1;
+  string reservationId = 2;
+  string reason = 3;
+}
+
+message CommitReservationRequest {
+  string reservationId = 1;
+}
+
+message CommitReservationResponse {
+  bool ok = 1;
+}
+
+message ReleaseReservationRequest {
+  string reservationId = 1;
+}
+
+message ReleaseReservationResponse {
+  bool ok = 1;
+}
+
+service InventoryService {
+  rpc ReserveStock(ReserveStockRequest) returns (ReserveStockResponse);
+  rpc CommitReservation(CommitReservationRequest) returns (CommitReservationResponse);
+  rpc ReleaseReservation(ReleaseReservationRequest) returns (ReleaseReservationResponse);
+}
