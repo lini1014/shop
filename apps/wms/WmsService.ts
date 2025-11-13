@@ -1,4 +1,3 @@
-/// kernlogik
 import { Inject, OnModuleInit, Controller } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
