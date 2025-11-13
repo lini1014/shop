@@ -1,11 +1,11 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './AppModule';
+import { OmsModule } from './OmsModule';
 import 'reflect-metadata';
 import { ValidationPipe } from '@nestjs/common';
 
 // Startet den OMS-HTTP-Server und richtet globale Pipes ein.
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(OmsModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   await app.listen(3000);

@@ -34,4 +34,4 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
   controllers: [OmsController],
   providers: [OmsService],
 })
-export class AppModule {}
+export class OmsModule {}
