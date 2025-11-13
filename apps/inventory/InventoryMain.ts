@@ -14,7 +14,7 @@ async function bootstrap() {
   });
 
   await app.listen();
-  console.log(`?? Inventory gRPC-Service laeuft auf ${
+  console.log(`Inventory gRPC-Service laeuft auf ${
     process.env.INVENTORY_GRPC_URL || '0.0.0.0:50051'
   }`);
 }

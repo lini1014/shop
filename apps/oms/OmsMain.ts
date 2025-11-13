@@ -9,7 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   await app.listen(3000);
-  console.log('OMS läuft auf http://localhost:3000');
+  console.log('OMS läuft auf Port 3000');
 }
 
 void bootstrap();

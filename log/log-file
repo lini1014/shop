@@ -14,3 +14,112 @@
 2025-11-13T15:40:08.350Z [WMS] [INFO]: Bestellung ORDER-1001 versandt
 2025-11-13T15:40:09.359Z [WMS] [INFO]: Bestellung ORDER-1001 abgeschlossen.
 --------------------
+--- Log-Service gestartet ---
+2025-11-13T21:45:21.282Z [WMS] [INFO]: WMS verbunden mit Log-Service
+2025-11-13T21:45:21.410Z [INVENTORY] [INFO]: Inventory Service verbunden mit Log-Service
+2025-11-13T21:45:21.868Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
+2025-11-13T21:45:21.930Z [OMS] [INFO]: OMS Service verbunden mit Log-Service, WMS-Service und Inventory (gRPC)
+2025-11-13T21:45:42.949Z [OMS] [INFO]: Bestellung weiterleiten an Service: firstName=Niklas, lastName=Osimhen, items=2
+2025-11-13T21:45:42.950Z [OMS] [INFO]: Bestellung 1000 ERHALTEN.
+2025-11-13T21:45:42.972Z [INVENTORY] [INFO]: Reservierung fuer Order 1000
+2025-11-13T21:45:42.972Z [INVENTORY] [INFO]: Reservierung fuer Order 1000 erfolgreich: res-1763070342972
+2025-11-13T21:45:42.977Z [OMS] [INFO]: Inventory RESERVE -> ok=true
+2025-11-13T21:45:43.004Z [PAYMENT] [INFO]: Authorize angefragt: order=1000 customer=Niklas Osimhen items=2
+2025-11-13T21:45:43.004Z [PAYMENT] [INFO]: Authorize OK: order=1000 total=74 balance=200
+2025-11-13T21:45:43.010Z [OMS] [INFO]: Payment AUTHORIZE -> success=true 
+2025-11-13T21:45:43.010Z [OMS] [INFO]: Bestellung 1000 erfolgreich bezahlt.
+2025-11-13T21:45:43.010Z [OMS] [INFO]: Bestellung 1000 an WMS weitergeleitet.
+2025-11-13T21:45:43.015Z [WMS] [INFO]: Bestellung erhalten: ORDER-1000
+2025-11-13T21:45:53.023Z [WMS] [INFO]: Artikel für Bestellung ORDER-1000 ausgewählt.
+2025-11-13T21:46:03.025Z [WMS] [INFO]: Bestellung ORDER-1000 verpackt.
+2025-11-13T21:46:13.029Z [WMS] [INFO]: Bestellung ORDER-1000 versandt
+2025-11-13T21:46:14.037Z [WMS] [INFO]: Bestellung ORDER-1000 abgeschlossen.
+--------------------
+--- Log-Service gestartet ---
+2025-11-13T21:45:21.410Z [INVENTORY] [INFO]: Inventory Service verbunden mit Log-Service
+2025-11-13T21:45:21.282Z [WMS] [INFO]: WMS verbunden mit Log-Service
+2025-11-13T21:45:21.868Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
+2025-11-13T21:45:21.930Z [OMS] [INFO]: OMS Service verbunden mit Log-Service, WMS-Service und Inventory (gRPC)
+2025-11-13T21:45:42.949Z [OMS] [INFO]: Bestellung weiterleiten an Service: firstName=Niklas, lastName=Osimhen, items=2
+2025-11-13T21:45:42.950Z [OMS] [INFO]: Bestellung 1000 ERHALTEN.
+2025-11-13T21:45:42.972Z [INVENTORY] [INFO]: Reservierung fuer Order 1000
+2025-11-13T21:45:42.977Z [OMS] [INFO]: Inventory RESERVE -> ok=true
+2025-11-13T21:45:42.972Z [INVENTORY] [INFO]: Reservierung fuer Order 1000 erfolgreich: res-1763070342972
+2025-11-13T21:45:43.004Z [PAYMENT] [INFO]: Authorize angefragt: order=1000 customer=Niklas Osimhen items=2
+2025-11-13T21:45:43.004Z [PAYMENT] [INFO]: Authorize OK: order=1000 total=74 balance=200
+2025-11-13T21:45:43.010Z [OMS] [INFO]: Bestellung 1000 erfolgreich bezahlt.
+2025-11-13T21:45:43.010Z [OMS] [INFO]: Bestellung 1000 an WMS weitergeleitet.
+2025-11-13T21:45:43.015Z [WMS] [INFO]: Bestellung erhalten: ORDER-1000
+2025-11-13T21:45:53.023Z [WMS] [INFO]: Artikel für Bestellung ORDER-1000 ausgewählt.
+2025-11-13T21:45:43.010Z [OMS] [INFO]: Payment AUTHORIZE -> success=true 
+2025-11-13T21:46:03.025Z [WMS] [INFO]: Bestellung ORDER-1000 verpackt.
+2025-11-13T21:46:14.037Z [WMS] [INFO]: Bestellung ORDER-1000 abgeschlossen.
+2025-11-13T21:49:50.781Z [WMS] [INFO]: WMS verbunden mit Log-Service
+2025-11-13T21:46:13.029Z [WMS] [INFO]: Bestellung ORDER-1000 versandt
+--------------------
+2025-11-13T21:49:50.936Z [INVENTORY] [INFO]: Inventory Service verbunden mit Log-Service
+2025-11-13T21:49:51.487Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
+2025-11-13T21:49:51.558Z [OMS] [INFO]: OMS Service verbunden mit Log-Service, WMS-Service und Inventory (gRPC)
+2025-11-13T21:50:15.188Z [OMS] [INFO]: Bestellung weiterleiten an Service: firstName=Niklas, lastName=Osimhen, items=2
+2025-11-13T21:50:15.188Z [OMS] [INFO]: Bestellung 1000 ERHALTEN.
+2025-11-13T21:50:15.216Z [INVENTORY] [INFO]: Reservierung fuer Order 1000
+2025-11-13T21:50:15.217Z [INVENTORY] [INFO]: Reservierung fuer Order 1000 erfolgreich: res-1763070615217
+2025-11-13T21:50:15.225Z [OMS] [INFO]: Inventory RESERVE -> ok=true
+2025-11-13T21:50:15.257Z [PAYMENT] [INFO]: Authorize angefragt: order=1000 customer=Niklas Osimhen items=2
+2025-11-13T21:50:15.257Z [PAYMENT] [INFO]: Authorize OK: order=1000 total=74 balance=200
+2025-11-13T21:50:15.263Z [OMS] [INFO]: Payment AUTHORIZE -> success=true 
+2025-11-13T21:50:15.263Z [OMS] [INFO]: Bestellung 1000 an WMS weitergeleitet.
+2025-11-13T21:50:15.263Z [OMS] [INFO]: Bestellung 1000 erfolgreich bezahlt.
+2025-11-13T21:50:15.269Z [WMS] [INFO]: Bestellung erhalten: ORDER-1000
+2025-11-13T21:50:19.555Z [OMS] [WARN]: Versuch, nicht existierende Order 1001 abzurufen.
+2025-11-13T21:50:25.274Z [WMS] [INFO]: Artikel für Bestellung ORDER-1000 ausgewählt.
+2025-11-13T21:50:35.283Z [WMS] [INFO]: Bestellung ORDER-1000 verpackt.
+2025-11-13T21:50:45.285Z [WMS] [INFO]: Bestellung ORDER-1000 versandt
+2025-11-13T21:50:46.300Z [WMS] [INFO]: Bestellung ORDER-1000 abgeschlossen.
+--------------------
+--- Log-Service gestartet ---
+2025-11-13T21:45:21.282Z [WMS] [INFO]: WMS verbunden mit Log-Service
+2025-11-13T21:45:21.410Z [INVENTORY] [INFO]: Inventory Service verbunden mit Log-Service
+2025-11-13T21:45:21.930Z [OMS] [INFO]: OMS Service verbunden mit Log-Service, WMS-Service und Inventory (gRPC)
+2025-11-13T21:45:21.868Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
+2025-11-13T21:45:42.949Z [OMS] [INFO]: Bestellung weiterleiten an Service: firstName=Niklas, lastName=Osimhen, items=2
+2025-11-13T21:45:42.972Z [INVENTORY] [INFO]: Reservierung fuer Order 1000
+2025-11-13T21:45:42.972Z [INVENTORY] [INFO]: Reservierung fuer Order 1000 erfolgreich: res-1763070342972
+2025-11-13T21:45:42.977Z [OMS] [INFO]: Inventory RESERVE -> ok=true
+2025-11-13T21:45:43.004Z [PAYMENT] [INFO]: Authorize angefragt: order=1000 customer=Niklas Osimhen items=2
+2025-11-13T21:45:43.004Z [PAYMENT] [INFO]: Authorize OK: order=1000 total=74 balance=200
+2025-11-13T21:45:43.010Z [OMS] [INFO]: Payment AUTHORIZE -> success=true 
+2025-11-13T21:45:43.010Z [OMS] [INFO]: Bestellung 1000 erfolgreich bezahlt.
+2025-11-13T21:45:43.010Z [OMS] [INFO]: Bestellung 1000 an WMS weitergeleitet.
+2025-11-13T21:45:42.950Z [OMS] [INFO]: Bestellung 1000 ERHALTEN.
+2025-11-13T21:45:53.023Z [WMS] [INFO]: Artikel für Bestellung ORDER-1000 ausgewählt.
+2025-11-13T21:45:43.015Z [WMS] [INFO]: Bestellung erhalten: ORDER-1000
+2025-11-13T21:46:14.037Z [WMS] [INFO]: Bestellung ORDER-1000 abgeschlossen.
+2025-11-13T21:46:03.025Z [WMS] [INFO]: Bestellung ORDER-1000 verpackt.
+2025-11-13T21:49:50.781Z [WMS] [INFO]: WMS verbunden mit Log-Service
+2025-11-13T21:46:13.029Z [WMS] [INFO]: Bestellung ORDER-1000 versandt
+2025-11-13T21:49:50.936Z [INVENTORY] [INFO]: Inventory Service verbunden mit Log-Service
+2025-11-13T21:49:51.487Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
+2025-11-13T21:49:51.558Z [OMS] [INFO]: OMS Service verbunden mit Log-Service, WMS-Service und Inventory (gRPC)
+2025-11-13T21:50:15.188Z [OMS] [INFO]: Bestellung weiterleiten an Service: firstName=Niklas, lastName=Osimhen, items=2
+2025-11-13T21:50:15.217Z [INVENTORY] [INFO]: Reservierung fuer Order 1000 erfolgreich: res-1763070615217
+2025-11-13T21:50:15.188Z [OMS] [INFO]: Bestellung 1000 ERHALTEN.
+2025-11-13T21:50:15.225Z [OMS] [INFO]: Inventory RESERVE -> ok=true
+2025-11-13T21:50:15.216Z [INVENTORY] [INFO]: Reservierung fuer Order 1000
+2025-11-13T21:50:15.257Z [PAYMENT] [INFO]: Authorize angefragt: order=1000 customer=Niklas Osimhen items=2
+2025-11-13T21:50:15.263Z [OMS] [INFO]: Payment AUTHORIZE -> success=true 
+2025-11-13T21:50:15.257Z [PAYMENT] [INFO]: Authorize OK: order=1000 total=74 balance=200
+2025-11-13T21:50:15.263Z [OMS] [INFO]: Bestellung 1000 an WMS weitergeleitet.
+2025-11-13T21:50:15.269Z [WMS] [INFO]: Bestellung erhalten: ORDER-1000
+2025-11-13T21:50:19.555Z [OMS] [WARN]: Versuch, nicht existierende Order 1001 abzurufen.
+2025-11-13T21:50:25.274Z [WMS] [INFO]: Artikel für Bestellung ORDER-1000 ausgewählt.
+2025-11-13T21:50:35.283Z [WMS] [INFO]: Bestellung ORDER-1000 verpackt.
+2025-11-13T21:50:45.285Z [WMS] [INFO]: Bestellung ORDER-1000 versandt
+2025-11-13T21:50:15.263Z [OMS] [INFO]: Bestellung 1000 erfolgreich bezahlt.
+2025-11-13T21:50:46.300Z [WMS] [INFO]: Bestellung ORDER-1000 abgeschlossen.
+--------------------
+--------------------
+2025-11-13T21:55:22.868Z [WMS] [INFO]: WMS verbunden mit Log-Service
+2025-11-13T21:55:22.967Z [INVENTORY] [INFO]: Inventory Service verbunden mit Log-Service
+2025-11-13T21:55:23.460Z [PAYMENT] [INFO]: Payment Service verbunden mit Log-Service
+2025-11-13T21:55:23.511Z [OMS] [INFO]: OMS Service verbunden mit Log-Service, WMS-Service und Inventory (gRPC)

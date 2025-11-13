@@ -12,6 +12,6 @@ async function bootstrap() {
 
   const port = Number(process.env.PORT ?? 3002);
   await app.listen(port, '0.0.0.0');
-  console.log(`Payment Service running on port ${port}`);
+  console.log(`Payment Service läuft auf port ${port}`);
 }
 void bootstrap();

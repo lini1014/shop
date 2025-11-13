@@ -54,6 +54,7 @@ interface InventoryGrpcClient {
 @Injectable()
 export class OmsService implements OnModuleInit {
   private readonly logFilePath = path.join(process.cwd(), 'log', 'log-file');
+  private readonly wmsStatusFilePath = path.join(process.cwd(), 'log', 'wms-status');
   private inventoryGrpcService!: InventoryGrpcClient;
 
   //*Client für den Log-Service wird injiziert
@@ -179,18 +180,21 @@ export class OmsService implements OnModuleInit {
 
   getLastWmsStatus(orderId: number): string | null {
     try {
-      if (!fs.existsSync(this.logFilePath)) {
+      if (!fs.existsSync(this.wmsStatusFilePath)) {
         return null;
       }
-      const lines = fs.readFileSync(this.logFilePath, 'utf-8').split(/\r?\n/);
+      const lines = fs.readFileSync(this.wmsStatusFilePath, 'utf-8').split(/\r?\n/);
       const searchToken = `ORDER-${orderId}`;
       for (let i = lines.length - 1; i >= 0; i--) {
         const line = lines[i];
-        if (!line || !line.includes('[WMS]') || !line.includes(searchToken)) {
+        if (!line) {
           continue;
         }
-        const match = line.match(/\]:\s*(.+)$/);
-        return match ? match[1].trim() : line.trim();
+        const [, orderToken, status] = line.split(';');
+        if (orderToken !== searchToken) {
+          continue;
+        }
+        return status?.trim() ?? null;
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

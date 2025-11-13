@@ -19,6 +19,6 @@ async function bootstrap() {
 
   //*Starten des Microservices
   await app.listen();
-  console.log('WMS Microservice hört zu...');
+  console.log('WMS läuft');
 }
 void bootstrap();

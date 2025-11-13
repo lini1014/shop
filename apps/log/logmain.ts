@@ -1,22 +1,37 @@
 import { NestFactory } from '@nestjs/core';
-import { LogModule } from './LogModule';
 import { Transport, RmqOptions } from '@nestjs/microservices';
+import { LogModule } from './LogModule';
+import { StatusModule } from './StatusModule';
 
-// Startet den Log-Microservice, der RabbitMQ-Logevents verarbeitet.
+// Startet beide RabbitMQ-Microservices (allgemeines Logging & WMS-Status).
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<RmqOptions>(LogModule, {
+  const logApp = await NestFactory.createMicroservice<RmqOptions>(LogModule, {
     transport: Transport.RMQ,
     options: {
       urls: [process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672'],
       queue: 'log_queue',
       queueOptions: {
-        durable: true, //
+        durable: true,
       },
       noAck: false,
     },
   });
-  await app.listen();
+
+  const wmsStatusApp = await NestFactory.createMicroservice<RmqOptions>(StatusModule, {
+    transport: Transport.RMQ,
+    options: {
+      urls: [process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672'],
+      queue: 'status_updates_queue',
+      queueOptions: {
+        durable: false,
+      },
+      noAck: false,
+    },
+  });
+
+  await Promise.all([logApp.listen(), wmsStatusApp.listen()]);
   console.log('Logging Microservice gestartet');
+  console.log('WMS Status gestartet');
 }
 
 void bootstrap();
