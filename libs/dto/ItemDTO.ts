@@ -1,12 +1,14 @@
-import { IsNumber, Min } from 'class-validator';
+import { IsNumber, Min, IsIn, IsInt } from 'class-validator';
 
-// OMS führt keine Preis-/Namenslogik. Nur IDs und Mengen.
+// Transportiert zulässige Artikel-IDs samt Mindestmengen fürs OMS.
 export class ItemDto {
   @IsNumber()
-  @Min(1)
+  @IsIn([101, 102, 103], {
+    message: 'productId muss 101, 102 oder 103 sein',
+  })
   productId!: number;
 
-  @IsNumber()
+  @IsInt()
   @Min(1)
   quantity!: number;
 }

@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { WmsModule } from './wms-modules';
+import { WmsModule } from './WmsModules';
 import { Transport, RmqOptions } from '@nestjs/microservices';
 
 async function bootstrap() {
@@ -9,8 +9,6 @@ async function bootstrap() {
     options: {
       //*URL zu dem RabbitMQ Server
       urls: [process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672'],
-      /** Das ist die Queue, auf die das WMS hört
-       * das OMS sendet Bestellungen an 'wms_queue' und das wird von diesem Service empfangen */
       queue: 'wms_queue',
       queueOptions: {
         durable: false,
@@ -23,4 +21,4 @@ async function bootstrap() {
   await app.listen();
   console.log('WMS Microservice hört zu...');
 }
-bootstrap();
+void bootstrap();

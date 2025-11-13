@@ -44,12 +44,17 @@ export class InventoryService implements OnModuleInit {
   reserveStock(items: ItemDto[]): string | null {
     // Prüfen, ob genug Bestand vorhanden ist
     for (const item of items) {
+<<<<<<< HEAD
       const current = this.stock.get(item.productId) ?? 0;
       if (current < item.quantity) {
         this.log(
           'warn',
           `Nicht genug Bestand für Produkt ${item.productId}: ${current} < ${item.quantity}`,
         );
+=======
+      const current = this.stock.get(item.sku) ?? 0;
+      if (current < item.qty) {
+>>>>>>> 844581d25236b4eaa4d1b828c34240f20ba867ca
         return null;
       }
     }
@@ -62,8 +67,6 @@ export class InventoryService implements OnModuleInit {
     }
 
     this.reservations.set(reservationId, { id: reservationId, items });
-
-    this.log('info', `Reservierung erfolgreich: ${reservationId}`);
     return reservationId;
   }
 

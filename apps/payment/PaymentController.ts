@@ -1,33 +1,49 @@
-import { Controller, Post, Body, Logger } from '@nestjs/common';
+import { Controller, Post, Body, Inject, OnModuleInit } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateOrderDto } from 'libs/dto/CreateOrderDTO';
+import { PaymentDto } from 'libs/dto/PaymentDTO';
 import { PaymentService } from './PaymentService';
-import type { PaymentResult } from './PaymentService';
-
+import { ClientProxy } from '@nestjs/microservices';
 
 @ApiTags('payments')
 @Controller('payments')
-export class PaymentController {
-  private readonly logger = new Logger(PaymentController.name);
-  constructor(private readonly service: PaymentService) {}
+export class PaymentController implements OnModuleInit {
+  constructor(
+    private readonly service: PaymentService,
+    @Inject('LOG_CLIENT') private readonly logClient: ClientProxy,
+  ) {}
 
-@Post('authorize')
-@ApiOperation({ summary: 'Nur Erfolg/Fehler zurückgeben' })
-authorize(@Body() dto: CreateOrderDto): { success: boolean } {
-  this.logger.log(
-    `Authorize angefragt: order=${dto.orderId} customer=${dto.firstName} ${dto.lastName} items=${dto.items?.length ?? 0}`,
-  );
-  const result = this.service.authorize(dto);
-  if (result.success) {
-    this.logger.log(
-      `Authorize OK: order=${dto.orderId} total=${result.totalAmount} balance=${result.accountBalance}`,
-    );
-  } else {
-    this.logger.warn(
-      `Authorize FAIL: order=${dto.orderId} total=${result.totalAmount} balance=${result.accountBalance} reason=${result.reason}`,
-    );
+  async onModuleInit() {
+    await this.logClient.connect();
   }
-  return { success: result.success };
-}
 
+  private log(level: 'info' | 'error' | 'warn', message: string) {
+    this.logClient.emit('log_message', {
+      service: 'PAYMENT',
+      level,
+      message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  @Post('authorize')
+  @ApiOperation({ summary: 'Nur Erfolg/Fehler zurückgeben' })
+  authorize(@Body() dto: PaymentDto): { success: boolean } {
+    this.log(
+      'info',
+      `Authorize angefragt: order=${dto.orderId} customer=${dto.firstName} ${dto.lastName} items=${dto.items?.length ?? 0}`,
+    );
+    const result = this.service.authorize(dto);
+    if (result.success) {
+      this.log(
+        'info',
+        `Authorize OK: order=${dto.orderId} total=${result.totalAmount} balance=${result.accountBalance}`,
+      );
+    } else {
+      this.log(
+        'warn',
+        `Authorize FAIL: order=${dto.orderId} total=${result.totalAmount} balance=${result.accountBalance} reason=${result.reason}`,
+      );
+    }
+    return { success: result.success };
+  }
 }

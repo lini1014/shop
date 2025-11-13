@@ -123,7 +123,7 @@ export class OmsService implements OnModuleInit {
     // 3) WMS anstoßen (hier simuliert)
     order.status = OrderStatus.FULFILLMENT_REQUESTED;
     const wmsPayload = {
-      orderId: `ORD-${order.id}`,
+      orderId: `ORDER-${order.id}`,
       items: order.items,
       customer: {
         firstName: body.firstName,
@@ -131,7 +131,7 @@ export class OmsService implements OnModuleInit {
       },
     };
     this.wmsClient.emit('order_received', wmsPayload);
-    this.log('info', `Bestellung ${order.id} an WMS (Queue: wms_queue) weitergeleitet.`);
+    this.log('info', `Bestellung ${order.id} an WMS weitergeleitet.`);
 
     this.orders.set(order.id, order);
     return order;
@@ -160,10 +160,7 @@ export class OmsService implements OnModuleInit {
         `http://localhost:3001/inventory/reservations`,
         { orderId, items },
       );
-      this.log(
-        'info',
-        `Inventory RESERVE -> ok=${data.ok} reservationId=${data.reservationId ?? '-'}`,
-      );
+      this.log('info', `Inventory RESERVE -> ok=${data.ok}`);
       return { ok: data.ok, reservationId: data.reservationId };
     } catch (e) {
       const errorDetails = e instanceof Error ? e.message : String(e);
@@ -208,10 +205,7 @@ export class OmsService implements OnModuleInit {
         firstName,
         lastName,
       });
-      this.log(
-        'info',
-        `Payment AUTHORIZE -> success=${data.success} reason=${data.reason ?? '-'} `,
-      );
+      this.log('info', `Payment AUTHORIZE -> success=${data.success} `);
       return {
         ok: data.success,
         reason: data.reason,
