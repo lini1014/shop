@@ -1,5 +1,6 @@
 import { ItemDto } from './ItemDTO';
 
+// Repräsentiert den Orderzustand inklusive Items und optionalem Abbruchgrund.
 export enum OrderStatus {
   RECEIVED = 'RECEIVED',
   RESERVED = 'RESERVED',

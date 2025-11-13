@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Logger } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateOrderDto } from 'libs/dto/CreateOrderDTO';
+import { PaymentDto } from 'libs/dto/PaymentDTO';
 import { PaymentService } from './PaymentService';
 
 @ApiTags('payments')
@@ -11,7 +11,7 @@ export class PaymentController {
 
   @Post('authorize')
   @ApiOperation({ summary: 'Nur Erfolg/Fehler zurückgeben' })
-  authorize(@Body() dto: CreateOrderDto): { success: boolean } {
+  authorize(@Body() dto: PaymentDto): { success: boolean } {
     this.logger.log(
       `Authorize angefragt: order=${dto.orderId} customer=${dto.firstName} ${dto.lastName} items=${dto.items?.length ?? 0}`,
     );

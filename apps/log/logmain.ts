@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { LogModule } from './LogModule';
 import { Transport, RmqOptions } from '@nestjs/microservices';
 
+// Startet den Log-Microservice, der RabbitMQ-Logevents verarbeitet.
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<RmqOptions>(LogModule, {
     transport: Transport.RMQ,

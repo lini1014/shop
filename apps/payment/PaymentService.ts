@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { ItemDto } from 'libs/dto/ItemDTO';
-import { CreateOrderDto } from 'libs/dto/CreateOrderDTO';
+import { PaymentDto } from 'libs/dto/PaymentDTO';
 import { Inject, OnModuleInit } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 export interface PaymentResult {
@@ -75,7 +75,7 @@ export class PaymentService implements OnModuleInit {
   /**
    * Prüft, ob das Konto-Guthaben reicht und gibt das Ergebnis zurück.
    */
-  authorize(create: CreateOrderDto): PaymentResult {
+  authorize(create: PaymentDto): PaymentResult {
     const normalize = (s: string) => s.trim().toLowerCase();
     const fullKey = `${normalize(create.firstName)} ${normalize(create.lastName)}`;
     const accountBalance = this.customerBalances[fullKey];

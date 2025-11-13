@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Controller } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import * as fs from 'fs';
@@ -10,62 +6,48 @@ import { Channel, Message } from 'amqplib';
 
 //*Definition einer Log-Nachricht
 interface LogPayload {
-  service: string; // Name des Dienstes, der die Log-Nachricht sendet
+  service: string;
   level: 'info' | 'warn' | 'error';
   message: string;
-  timestamp: string; 
-}  
+  timestamp: string;
+}
 
+// Controller, der LogQueue-Nachrichten empfängt und verarbeitet.
 @Controller()
 export class LogService {
-  private logFilePath: string; //* Pfad zur Datei, in die geschrieben wird
+  private logFilePath: string;
 
   constructor() {
-  //* Definiert den Pfad direkt unterhalb des Projektwurzelverzeichnisses
-  this.logFilePath = path.join(process.cwd(), 'log-file');
+    this.logFilePath = path.join(process.cwd(), 'log-file');
 
-  console.log(`Log-Datei Pfad: ${this.logFilePath}`);
-  try {
-    fs.appendFileSync(this.logFilePath, '--- Log-Service gestartet ---\n');
-  }
-  catch(error) {
-    console.error('Konnte Log-Datei nicht initial schreiben', error);
-  }
- }
-//*Reagiert auf Nachrichten mit dem 'log_message' Pattern 
-@EventPattern('log_message')
-async handleLog(@Payload() data: LogPayload, @Ctx() context: RmqContext) {
-  const channel : Channel = context.getChannelRef();
-  const originalMsg : Message = context.getMessage();
-  //*Formatierung des Log-Eintrags
-  const logEntry = `${data.timestamp} [${data.service}] [${data.level.toUpperCase()}]: ${data.message}\n`;
- 
-  try {
-    //* Log-Eintrag wird asynchron in die Datei angehangen
-    await fs.promises.appendFile(this.logFilePath, logEntry);
-
-    /** Separator am Ende eines Prozesses (heuristisch):
-     * - Erfolg: WMS meldet "abgeschlossen"
-      - Fehler/Abbruch: OMS meldet "storniert" oder "fehlgeschlagen" */
-    const isTerminal =
-      (data.service === 'WMS' && /abgeschlossen/i.test(data.message)) ||
-      (data.service === 'OMS' && (/storniert/i.test(data.message) || /fehlgeschlagen/i.test(data.message)));
- 
-    //* Trennlinie für bessere Lesbarkeit
-    if (isTerminal) {
-      await fs.promises.appendFile(this.logFilePath, '--------------------\n');
+    console.log(`Log-Datei Pfad: ${this.logFilePath}`);
+    try {
+      fs.appendFileSync(this.logFilePath, '--- Log-Service gestartet ---\n');
+    } catch (error) {
+      console.error('Konnte Log-Datei nicht initial schreiben', error);
     }
-
-    channel.ack(originalMsg);
-
   }
-catch(error){
-  console.error('Konnte nicht in Logfile schreiben', error);
-  channel.nack(originalMsg, false, true);
-}
 
+  // Persistiert jeden eingehenden Logeintrag und bestätigt die RabbitMQ-Nachricht.
+  @EventPattern('log_message')
+  async handleLog(@Payload() data: LogPayload, @Ctx() context: RmqContext) {
+    const channel: Channel = context.getChannelRef();
+    const originalMsg: Message = context.getMessage();
+    const logEntry = `${data.timestamp} [${data.service}] [${data.level.toUpperCase()}]: ${data.message}\n`;
+    try {
+      await fs.promises.appendFile(this.logFilePath, logEntry);
 
-}
+      const isTerminal =
+        (data.service === 'WMS' && /abgeschlossen/i.test(data.message)) ||
+        (data.service === 'OMS' && (/storniert/i.test(data.message) || /fehlgeschlagen/i.test(data.message)));
+      if (isTerminal) {
+        await fs.promises.appendFile(this.logFilePath, '--------------------\n');
+      }
 
-
+      channel.ack(originalMsg);
+    } catch (error) {
+      console.error('Konnte nicht in Logfile schreiben', error);
+      channel.nack(originalMsg, false, true);
+    }
+  }
 }
