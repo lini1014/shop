@@ -18,5 +18,5 @@ async function bootstrap() {
   await app.listen();
   console.log('Logging Microservice gestartet');
 }
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
-bootstrap();
+
+void bootstrap();

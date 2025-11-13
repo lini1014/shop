@@ -1,17 +1,42 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Logger } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Inject,
+  OnModuleInit,
+} from '@nestjs/common';
 import { OmsService } from './OmsService';
 import { CreateOrderRequestDto } from '../../libs/dto/CreateOrderRequestDto';
+import { ClientProxy } from '@nestjs/microservices';
 
 // REST-Einstiegspunkt, der die OMS-Bestellfunktionen nach außen bereitstellt.
 @Controller('orders')
-export class OmsController {
-  private readonly logger = new Logger(OmsController.name);
-  constructor(private readonly omsService: OmsService) {}
+export class OmsController implements OnModuleInit {
+  constructor(
+    private readonly omsService: OmsService,
+    @Inject('LOG_CLIENT') private readonly logClient: ClientProxy,
+  ) {}
+  async onModuleInit() {
+    await this.logClient.connect();
+    this.log('info', 'OmsController verbunden mit Log-Service');
+  }
 
+  private log(level: 'info' | 'error' | 'warn', message: string) {
+    this.logClient.emit('log_message', {
+      service: 'OMS_Controller',
+      level,
+      message,
+      timestamp: new Date().toISOString(),
+    });
+  }
   // POST /orders
   @Post()
   async create(@Body() body: CreateOrderRequestDto) {
-    this.logger.log(
+    this.log(
+      'info',
       `Forwarding order to service: firstName=${body.firstName}, lastName=${body.lastName}, items=${body.items?.length ?? 0}`,
     );
     const order = await this.omsService.createOrderFromSelection(body);

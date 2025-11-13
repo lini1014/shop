@@ -23,4 +23,4 @@ async function bootstrap() {
   await app.listen();
   console.log('WMS Microservice hört zu...');
 }
-bootstrap();
+void bootstrap();

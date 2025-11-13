@@ -1,7 +1,6 @@
 import { Inject, OnModuleInit, Controller } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
-import { Channel, Message } from 'amqplib';
+import { EventPattern, Payload } from '@nestjs/microservices';
 
 //* Aussehen einer Order-Nachricht (Beispiel)
 interface OrderPayload {
@@ -13,16 +12,11 @@ interface OrderPayload {
 export class WmsService implements OnModuleInit {
   //* Hier werden die Sender (Clients) "injiziert" die wir in "wms-modules" definiert haben
   constructor(
-    //* statusClient referenziert den WMS_StATUS_CLIENT Sender
     @Inject('WMS_STATUS_CLIENT') private readonly statusClient: ClientProxy,
-    //* logClient referenziert den LOG_CLIENT Sender
     @Inject('LOG_CLIENT') private readonly logClient: ClientProxy,
   ) {}
 
-  //* Diese Methode wird aufgerufen, wenn der Service initialisiert wird
-
   async onModuleInit() {
-    //* Sender (Clients) müssen sich aktiv verbinden, bevor sie 'emit' benutzen können
     try {
       await this.statusClient.connect();
       await this.logClient.connect();
@@ -32,6 +26,7 @@ export class WmsService implements OnModuleInit {
       this.log('error', 'WMS konnte sich nicht mit RabbitMQ verbinden.');
     }
   }
+
   //* private Methode zum Kapseln vom Logging
   private log(level: 'info' | 'error' | 'warn', message: string) {
     //* Senden einer Nachricht an den Log-Service
@@ -46,10 +41,7 @@ export class WmsService implements OnModuleInit {
    * Diese Methode wird automatisch aufgerufen, wenn eine Nachricht mit 'order_received' auf der 'wms_queue' eintrifft
    */
   @EventPattern('order_received')
-  async handleOrderReceived(@Payload() data: OrderPayload, @Ctx() context: RmqContext) {
-    const channel: Channel = context.getChannelRef();
-    const originalMsg: Message = context.getMessage();
-
+  async handleOrderReceived(@Payload() data: OrderPayload) {
     this.log('info', `Bestellung erhalten: ${data.orderId}`);
 
     try {
@@ -69,22 +61,10 @@ export class WmsService implements OnModuleInit {
       await this.sleep(10000); // 1 Sekunde warten
       this.publishStatus(data.orderId, 'Bestellung versandt');
       this.log('info', `Bestellung ${data.orderId} versandt`);
-
       await this.sleep(50000); // 0.5 Sekunden warten
       this.log('info', `Bestellung ${data.orderId} abgeschlossen.`);
-
-      /** Erfolg: RabbitMQ wird weitergegeben, dass die Nachricht erfolgreich verarbeitet wurde und 
-       * aus der Queue gelöscht werden kann */
-
-      channel.ack(originalMsg);
     } catch (error) {
-      this.log(
-        'error',
-        `Fehler bei der Verarbeitung der Bestellung ${data.orderId}:${error.message}`,
-      );
-
-      /** Fehler: RabbitMQ wird weitergegeben, dass ein Fehler aufgetreten ist */
-      channel.nack(originalMsg, false, true);
+      this.log('error', `Fehler bei der Verarbeitung der Bestellung ${data.orderId}:${error}`);
     }
   }
 

@@ -1,8 +1,7 @@
 import { Controller } from '@nestjs/common';
-import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
+import { EventPattern, Payload } from '@nestjs/microservices';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Channel, Message } from 'amqplib';
 
 //*Definition einer Log-Nachricht
 interface LogPayload {
@@ -18,9 +17,16 @@ export class LogService {
   private logFilePath: string;
 
   constructor() {
-    this.logFilePath = path.join(process.cwd(), 'log-file');
+    const logDir = path.join(process.cwd(), 'log');
+    this.logFilePath = path.join(logDir, 'log-file');
 
     console.log(`Log-Datei Pfad: ${this.logFilePath}`);
+
+    if (!fs.existsSync(logDir)) {
+      console.log(`Erstelle Log-Verzeichnis: ${logDir}`);
+      fs.mkdirSync(logDir);
+    }
+
     try {
       fs.appendFileSync(this.logFilePath, '--- Log-Service gestartet ---\n');
     } catch (error) {
@@ -30,24 +36,20 @@ export class LogService {
 
   // Persistiert jeden eingehenden Logeintrag und bestätigt die RabbitMQ-Nachricht.
   @EventPattern('log_message')
-  async handleLog(@Payload() data: LogPayload, @Ctx() context: RmqContext) {
-    const channel: Channel = context.getChannelRef();
-    const originalMsg: Message = context.getMessage();
+  async handleLog(@Payload() data: LogPayload) {
     const logEntry = `${data.timestamp} [${data.service}] [${data.level.toUpperCase()}]: ${data.message}\n`;
     try {
       await fs.promises.appendFile(this.logFilePath, logEntry);
 
       const isTerminal =
         (data.service === 'WMS' && /abgeschlossen/i.test(data.message)) ||
-        (data.service === 'OMS' && (/storniert/i.test(data.message) || /fehlgeschlagen/i.test(data.message)));
+        (data.service === 'OMS' &&
+          (/storniert/i.test(data.message) || /fehlgeschlagen/i.test(data.message)));
       if (isTerminal) {
         await fs.promises.appendFile(this.logFilePath, '--------------------\n');
       }
-
-      channel.ack(originalMsg);
     } catch (error) {
       console.error('Konnte nicht in Logfile schreiben', error);
-      channel.nack(originalMsg, false, true);
     }
   }
 }
